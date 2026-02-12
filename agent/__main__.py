@@ -29,17 +29,52 @@ class MissingAPIKeyError(Exception):
     """Exception for missing API key."""
 
 
+def get_model_and_check_api_key() -> str:
+    """Determine which model to use and verify the appropriate API key is set.
+
+    Returns the model name to use.
+    Raises MissingAPIKeyError if the required API key is not set.
+    """
+    model = os.getenv("LITELLM_MODEL", "gemini/gemini-2.5-flash")
+
+    # Check for the appropriate API key based on the model
+    if model.startswith("gemini/") or model.startswith("google/"):
+        if not os.getenv("GOOGLE_GENAI_USE_VERTEXAI") == "TRUE":
+            if not os.getenv("GEMINI_API_KEY"):
+                raise MissingAPIKeyError(
+                    f"Model '{model}' requires GEMINI_API_KEY environment variable. "
+                    "Get one at https://aistudio.google.com/apikey"
+                )
+    elif model.startswith("gpt-") or model.startswith("openai/"):
+        if not os.getenv("OPENAI_API_KEY"):
+            raise MissingAPIKeyError(
+                f"Model '{model}' requires OPENAI_API_KEY environment variable. "
+                "Get one at https://platform.openai.com/api-keys"
+            )
+    elif model.startswith("claude-") or model.startswith("anthropic/"):
+        if not os.getenv("ANTHROPIC_API_KEY"):
+            raise MissingAPIKeyError(
+                f"Model '{model}' requires ANTHROPIC_API_KEY environment variable. "
+                "Get one at https://console.anthropic.com/settings/keys"
+            )
+    elif model.startswith("azure/"):
+        if not os.getenv("AZURE_API_KEY"):
+            raise MissingAPIKeyError(
+                f"Model '{model}' requires AZURE_API_KEY environment variable."
+            )
+    # For other models, LiteLLM will handle the API key check
+
+    return model
+
+
 @click.command()
 @click.option("--host", default="localhost")
 @click.option("--port", default=10003)
 def main(host, port):
     try:
-        # Check for API key
-        if not os.getenv("GOOGLE_GENAI_USE_VERTEXAI") == "TRUE":
-            if not os.getenv("GEMINI_API_KEY"):
-                raise MissingAPIKeyError(
-                    "GEMINI_API_KEY environment variable not set and GOOGLE_GENAI_USE_VERTEXAI is not TRUE."
-                )
+        # Check for API key based on model
+        model = get_model_and_check_api_key()
+        logger.info(f"Using LLM model: {model}")
 
         capabilities = AgentCapabilities(
             streaming=True,
@@ -97,6 +132,7 @@ def main(host, port):
         )
 
         logger.info(f"Starting UI Builder Agent on {base_url}")
+        logger.info(f"LLM Provider: {model}")
         logger.info("Demo commands to try:")
         logger.info("  - 'Create a headline for my startup'")
         logger.info("  - 'Build a KPI dashboard'")

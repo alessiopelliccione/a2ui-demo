@@ -32,12 +32,36 @@ a2ui-demo/
 - Node.js 18+
 - Python 3.13+
 - [uv](https://github.com/astral-sh/uv) package manager
-- Gemini API key
+- API key for your preferred LLM provider
 
-### 1. Set API Key
+### 1. Choose Your LLM Provider
 
+The agent supports multiple LLM providers via [LiteLLM](https://docs.litellm.ai/docs/providers).
+
+**Option A: Google Gemini (default)**
 ```bash
 export GEMINI_API_KEY="your_gemini_api_key"
+# Optional: specify model (default: gemini/gemini-2.5-flash)
+export LITELLM_MODEL="gemini/gemini-2.5-pro"
+```
+
+**Option B: OpenAI**
+```bash
+export OPENAI_API_KEY="your_openai_api_key"
+export LITELLM_MODEL="gpt-4o"  # or gpt-4o-mini, gpt-4-turbo
+```
+
+**Option C: Anthropic Claude**
+```bash
+export ANTHROPIC_API_KEY="your_anthropic_api_key"
+export LITELLM_MODEL="claude-3-5-sonnet-20241022"
+```
+
+**Option D: Azure OpenAI**
+```bash
+export AZURE_API_KEY="your_azure_api_key"
+export AZURE_API_BASE="https://your-resource.openai.azure.com"
+export LITELLM_MODEL="azure/gpt-4o"
 ```
 
 ### 2. Build Renderers (first time only)
@@ -86,8 +110,11 @@ Navigate to `http://localhost:5173` and try these commands:
 ## One-Liner Setup
 
 ```bash
-# Terminal 1: Build and run agent
-cd renderers/web_core && npm install && npm run build && cd ../lit && npm install && npm run build && cd ../../agent && uv run .
+# Terminal 1: Build and run agent (with Gemini)
+export GEMINI_API_KEY="your_key" && cd renderers/web_core && npm install && npm run build && cd ../lit && npm install && npm run build && cd ../../agent && uv run .
+
+# Or with OpenAI
+export OPENAI_API_KEY="your_key" && export LITELLM_MODEL="gpt-4o" && cd agent && uv run .
 
 # Terminal 2: Run client
 cd client/shell && npm install && npm run dev
@@ -133,9 +160,19 @@ The agent can generate these UI patterns:
 
 ## Troubleshooting
 
-### "GEMINI_API_KEY not set"
+### "API_KEY not set" error
+Set the appropriate API key for your chosen model:
 ```bash
+# For Gemini (default)
 export GEMINI_API_KEY="your_key_here"
+
+# For OpenAI
+export OPENAI_API_KEY="your_key_here"
+export LITELLM_MODEL="gpt-4o"
+
+# For Anthropic
+export ANTHROPIC_API_KEY="your_key_here"
+export LITELLM_MODEL="claude-3-5-sonnet-20241022"
 ```
 
 ### Build errors in renderers

@@ -78,8 +78,24 @@ class UIBuilderAgent:
         return "Generating your UI..."
 
     def _build_agent(self, use_ui: bool) -> LlmAgent:
-        """Builds the LLM agent for the UI builder."""
+        """Builds the LLM agent for the UI builder.
+
+        Supported models via LiteLLM:
+        - Gemini: gemini/gemini-2.5-flash, gemini/gemini-2.5-pro, gemini/gemini-1.5-pro
+        - OpenAI: gpt-4o, gpt-4o-mini, gpt-4-turbo, gpt-3.5-turbo
+        - Anthropic: claude-3-5-sonnet-20241022, claude-3-opus-20240229
+        - Azure: azure/gpt-4o, azure/gpt-4
+        - And many more: https://docs.litellm.ai/docs/providers
+
+        Set via environment variable:
+        - LITELLM_MODEL=gpt-4o (for OpenAI)
+        - LITELLM_MODEL=gemini/gemini-2.5-flash (for Gemini)
+        - LITELLM_MODEL=claude-3-5-sonnet-20241022 (for Anthropic)
+        """
+        # Default to Gemini, but easily switchable via env var
         LITELLM_MODEL = os.getenv("LITELLM_MODEL", "gemini/gemini-2.5-flash")
+
+        logger.info(f"Using LLM model: {LITELLM_MODEL}")
 
         if use_ui:
             instruction = AGENT_INSTRUCTION + get_ui_prompt(UI_BUILDER_EXAMPLES)
