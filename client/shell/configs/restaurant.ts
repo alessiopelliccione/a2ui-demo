@@ -53,5 +53,5 @@ export const config: AppConfig = {
     "Looking for open tables...",
     "Almost there...",
   ],
-  serverUrl: "http://localhost:10002",
+  serverUrl: "http://localhost:10003",
 };

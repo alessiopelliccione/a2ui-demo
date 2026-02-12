@@ -35,8 +35,8 @@ export class A2UIClient {
 
   async #getClient() {
     if (!this.#client) {
-      // Default to localhost:10002 if no URL provided (fallback for restaurant app default)
-      const baseUrl = this.#serverUrl || "http://localhost:10002";
+      // Default to localhost:10003 if no URL provided (fallback for restaurant app default)
+      const baseUrl = this.#serverUrl || "http://localhost:10003";
 
       this.#client = await A2AClient.fromCardUrl(
         `${baseUrl}/.well-known/agent-card.json`,
