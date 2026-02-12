@@ -4,21 +4,29 @@ A high-impact technical session demonstrating AI-driven UI generation with Angul
 
 ---
 
-## Session Overview
+## Session Structure
 
-| | |
-|---|---|
-| **Title** | Generative Frontend / Server-Driven UI / AI-Driven UI |
-| **Duration** | 30–45 minutes |
-| **Style** | Technical, practical, with real demos |
+### 1. The Shift: From Deterministic to Intent-Based (5-7 min)
+
+**Objective:** Challenge the audience's perception of UI interaction.
+
+**The "Natural Language Takeover" Hook:**
+- **Terminals** used to accept shell commands → now it’s Natural Language.
+- **IDEs** used to accept code → now it’s Natural Language.
+- **Search Engines** used to accept keywords → now it’s Natural Language.
+- **Your sites & apps** accept clicks, drags, hovers → soon it’ll all be Natural Language.
+
+**The Core Thesis:**
+- We are moving beyond clicks and drags.
+- Massive shift: **Deterministic Flows** (if click, then X) → **Intent-Based Systems**.
+- As Guillermo Rauch (Vercel) pointed out: the shift to natural language is happening now.
+- **The Question:** Are we really ready for this?
 
 ---
 
-## Session Structure
+### 2. Introduction: What is a Generative Frontend (5 min)
 
-### 1. Introduction: What is a Generative Frontend (5 min)
-
-**Objective:** Provide immediate, clear context.
+**Objective:** Provide immediate, clear context on the implementation.
 
 - UI that isn't static, but is generated/modified by AI at runtime
 - The LLM controls:
@@ -34,7 +42,7 @@ A high-impact technical session demonstrating AI-driven UI generation with Angul
 
 ---
 
-### 2. Why This Matters (3–4 min)
+### 3. Why This Matters (3–4 min)
 
 - Adaptive UIs per person, context, device
 - Runtime-generated microfrontends
@@ -44,7 +52,7 @@ A high-impact technical session demonstrating AI-driven UI generation with Angul
 
 ---
 
-### 3. Architecture: Transforming LLM Output → UI (8–10 min)
+### 4. Architecture: Transforming LLM Output → UI (8–10 min)
 
 #### Approach A → A2UI (Angular Adaptive UI)
 
@@ -89,7 +97,7 @@ User prompt ---> LLM ---> JSON Schema ---> Angular UI Renderer
 
 ---
 
-### 4. High-Impact Demos (10–15 min)
+### 5. High-Impact Demos (10–15 min)
 
 #### Demo 1 — Headline Generator (simple, powerful)
 
@@ -155,7 +163,7 @@ The LLM regenerates layout/columns/spacing.
 
 ---
 
-### 5. Code: Minimal Angular UI Renderer
+### 6. Code: Minimal Angular UI Renderer
 
 ```typescript
 const componentMap = {
@@ -184,7 +192,7 @@ Shows how simple it is to connect JSON → UI.
 
 ---
 
-### 6. Takeaways (3 min)
+### 7. Takeaways (3 min)
 
 - LLMs are transforming the concept of frontend
 - UI becomes runtime and adaptive
