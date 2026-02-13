@@ -64,17 +64,14 @@ export AZURE_API_BASE="https://your-resource.openai.azure.com"
 export LITELLM_MODEL="azure/gpt-4o"
 ```
 
-### 2. Build Renderers (first time only)
+### 2. Build Everything (first time only)
 
 ```bash
-# Build web_core
-cd renderers/web_core
-npm install && npm run build
-
-# Build lit renderer
-cd ../lit
-npm install && npm run build
+# From the project root - builds all dependencies automatically via wireit
+cd client/shell && npm install && npm run build
 ```
+
+This single command builds `web_core` → `lit` → `shell` in the correct order thanks to [wireit](https://github.com/nicolo-ribaudo/wireit) dependency management.
 
 ### 3. Start the UI Builder Agent
 
@@ -110,14 +107,17 @@ Navigate to `http://localhost:5173` and try these commands:
 ## One-Liner Setup
 
 ```bash
-# Terminal 1: Build and run agent (with Gemini)
-export GEMINI_API_KEY="your_key" && cd renderers/web_core && npm install && npm run build && cd ../lit && npm install && npm run build && cd ../../agent && uv run .
+# First time: build everything
+cd client/shell && npm install && npm run build && cd ../..
+
+# Terminal 1: Run agent (with Gemini)
+export GEMINI_API_KEY="your_key" && cd agent && uv run .
 
 # Or with OpenAI
 export OPENAI_API_KEY="your_key" && export LITELLM_MODEL="gpt-4o" && cd agent && uv run .
 
 # Terminal 2: Run client
-cd client/shell && npm install && npm run dev
+cd client/shell && npm run dev
 ```
 
 ## Session Structure (30-45 min)
