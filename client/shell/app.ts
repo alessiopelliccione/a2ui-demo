@@ -150,6 +150,12 @@ export class A2UILayoutEditor extends SignalWatcher(LitElement) {
       }
     }
 
+    // GESTIONE LINK ESTERNI: Se l'azione è open_url, non chiamare l'AI
+    if (evt.detail.action.name === "open_url" && context.url) {
+      window.open(context.url as string, "_blank", "noopener,noreferrer");
+      return;
+    }
+
     const message: v0_8.Types.A2UIClientEventMessage = {
       userAction: {
         name: evt.detail.action.name,

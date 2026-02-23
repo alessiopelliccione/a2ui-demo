@@ -84,6 +84,9 @@ def get_ui_prompt(examples: str) -> str:
     - Generate lists with images and cards
     - Modify existing UIs based on user feedback
 
+    SPECIAL ACTIONS:
+    - To open an external link (social media, websites), use a Button with action name "open_url" and provide the URL in the context with key "url". This action is handled locally by the browser and will not involve the agent.
+
     IMPORTANT RULES:
     1. Your response MUST be in two parts, separated by the delimiter: `---a2ui_JSON---`
     2. The first part is your conversational text response explaining what you created
