@@ -77,25 +77,26 @@ class UIBuilderAgentExecutor(AgentExecutor):
         # Handle UI events (button clicks, form submissions, etc.)
         if ui_event_part:
             logger.info(f"Received A2UI ClientEvent: {ui_event_part}")
-            action = ui_event_part.get("actionName")
+            # The client sends 'name', not 'actionName'
+            action = ui_event_part.get("name")
             ctx = ui_event_part.get("context", {})
 
             # Generic handling of UI events
             if action == "cta_click":
-                query = "User clicked the call-to-action button. What would you like to show next?"
+                query = "The user clicked the main CTA button. Acknowledge this and show a success message or a next step UI (like a sign-up form)."
             elif action == "submit_form":
                 form_data = json.dumps(ctx)
-                query = f"User submitted form with data: {form_data}. Generate a confirmation UI."
+                query = f"User submitted form with data: {form_data}. Confirm receipt and show a thank you message or a success state."
             elif action == "select_product":
                 product = ctx.get("product", "Unknown")
-                query = f"User selected product: {product}. Generate a detailed view for this product."
+                query = f"User selected product: {product}. Display detailed specifications and an 'Order Now' button for this product."
             elif action == "view_item":
                 item_id = ctx.get("itemId", "Unknown")
-                query = f"User wants to view item with ID: {item_id}. Generate a detailed view."
+                query = f"User wants to view item with ID: {item_id}. Generate a detailed item view."
             elif action == "complete_wizard":
-                query = "User completed the wizard. Generate a success/completion UI."
+                query = "User completed the wizard. Show a celebration/completion UI with next steps."
             else:
-                query = f"User triggered action: {action} with data: {ctx}"
+                query = f"The user interacted with the UI element '{action}' with data {ctx}. Respond appropriately by updating the UI."
         else:
             logger.info("No A2UI UI event part found. Using text input.")
             query = context.get_user_input()

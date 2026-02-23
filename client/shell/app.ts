@@ -59,7 +59,7 @@ export class A2UILayoutEditor extends SignalWatcher(LitElement) {
       flex-direction: row;
       width: 100vw;
       height: 100vh;
-      background: #000;
+      background: #ffffff;
       overflow: hidden;
       margin: 0;
       padding: 0;
@@ -68,6 +68,7 @@ export class A2UILayoutEditor extends SignalWatcher(LitElement) {
     #surfaces {
       width: 100%;
       max-width: 1000px;
+      margin: 0 auto;
       animation: fadeIn 0.4s ease-out;
       display: flex;
       flex-direction: column;
@@ -112,7 +113,7 @@ export class A2UILayoutEditor extends SignalWatcher(LitElement) {
               .surfaceId=${id}
               .surface=${surface}
               .processor=${this.#processor}
-              @a2uiaction=${this.#handleAction}
+              @a2uiaction=${(evt: v0_8.Events.StateEvent<"a2ui.action">) => this.#handleAction(evt, id)}
             ></a2ui-surface>
           `)}
         </section>
@@ -132,7 +133,7 @@ export class A2UILayoutEditor extends SignalWatcher(LitElement) {
     await this.#sendAndProcessMessage(message);
   }
 
-  async #handleAction(evt: v0_8.Events.StateEvent<"a2ui.action">) {
+  async #handleAction(evt: v0_8.Events.StateEvent<"a2ui.action">, surfaceId: string) {
     const [target] = evt.composedPath();
     if (!(target instanceof HTMLElement)) return;
 
@@ -144,7 +145,7 @@ export class A2UILayoutEditor extends SignalWatcher(LitElement) {
         else if (item.value.literalString) context[item.key] = item.value.literalString;
         else if (item.value.path) {
           const path = this.#processor.resolvePath(item.value.path, evt.detail.dataContextPath);
-          context[item.key] = this.#processor.getData(evt.detail.sourceComponent, path, evt.detail.action.name);
+          context[item.key] = this.#processor.getData(evt.detail.sourceComponent, path, surfaceId);
         }
       }
     }
@@ -152,7 +153,7 @@ export class A2UILayoutEditor extends SignalWatcher(LitElement) {
     const message: v0_8.Types.A2UIClientEventMessage = {
       userAction: {
         name: evt.detail.action.name,
-        surfaceId: evt.detail.sourceComponentId,
+        surfaceId,
         sourceComponentId: target.id,
         timestamp: new Date().toISOString(),
         context,

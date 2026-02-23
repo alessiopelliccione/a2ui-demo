@@ -33,23 +33,29 @@ export class Canvas extends LitElement {
       flex: 1;
       height: 100vh;
       overflow-y: auto;
-      padding: 60px;
-      background: #0a0a0a;
+      padding: 80px; /* Aumentato per dare respiro */
+      background: #fdfdfd; /* Grigio quasi bianco per staccare dalla sidebar */
       display: flex;
       flex-direction: column;
-      align-items: center;
       position: relative;
       box-sizing: border-box;
 
-      /* FORZA IL BIANCO SOLO NEL CANVAS */
-      --n-10: #ffffff;
-      --n-20: #f5f5f5;
-      --n-30: #e5e5e5;
-      --n-40: #d4d4d4;
-      --n-50: #a3a3a3;
-      --n-80: #ffffff;
-      --n-90: #f5f5f5;
-      --n-100: #000000; /* Per i bottoni neri su bianco */
+      /* FORZA IL TESTO SCURO NEL CANVAS (TEMA LIGHT) */
+      --n-10: #111827;
+      --n-20: #1f2937;
+      --n-30: #374151;
+      --n-40: #4b5563;
+      --n-50: #6b7280;
+      --n-80: #111827;
+      --n-90: #000000;
+      --n-100: #ffffff;
+    }
+
+    /* Contenitore interno per centrare senza tagliare */
+    ::slotted(*) {
+      width: 100%;
+      max-width: 1000px;
+      margin: 0 auto;
     }
 
     .pending {
@@ -63,7 +69,7 @@ export class Canvas extends LitElement {
       position: absolute;
       top: 0;
       left: 0;
-      background: rgba(0, 0, 0, 0.4);
+      background: rgba(255, 255, 255, 0.8);
       backdrop-filter: blur(8px);
       z-index: 5;
     }
@@ -71,14 +77,14 @@ export class Canvas extends LitElement {
     .spinner {
       width: 32px;
       height: 32px;
-      border: 2px solid #262626;
-      border-top-color: #fff;
+      border: 2px solid #e5e7eb;
+      border-top-color: #111827;
       border-radius: 50%;
       animation: spin 0.8s linear infinite;
     }
 
     .loading-text {
-      color: #737373;
+      color: #6b7280;
       font-size: 13px;
       font-weight: 400;
       font-family: 'Geist', sans-serif;
@@ -89,7 +95,7 @@ export class Canvas extends LitElement {
       display: flex;
       align-items: center;
       justify-content: center;
-      color: rgba(255, 255, 255, 0.05);
+      color: rgba(0, 0, 0, 0.05);
       text-transform: uppercase;
       letter-spacing: 5px;
       font-size: 24px;

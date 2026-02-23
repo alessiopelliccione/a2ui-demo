@@ -14,9 +14,8 @@
  limitations under the License.
  */
 
-import { LitElement, html, css, nothing } from "lit";
+import { LitElement, html, css } from "lit";
 import { customElement, property } from "lit/decorators.js";
-import { styleMap } from "lit/directives/style-map.js";
 import { AppConfig } from "../configs/types.js";
 
 @customElement("a2ui-sidebar")
@@ -32,15 +31,21 @@ export class Sidebar extends LitElement {
 
   static styles = css`
     :host {
+      display: block;
       width: 400px;
       min-width: 400px;
       height: 100vh;
-      border-right: 1px solid #262626;
+      background: #f9fafb;
+      border-right: 1px solid #e5e7eb;
+      box-sizing: border-box;
+    }
+
+    .sidebar-container {
+      padding: 48px 32px;
+      height: 100%;
       display: flex;
       flex-direction: column;
-      padding: 40px;
-      background: #000;
-      gap: 40px;
+      gap: 48px;
       box-sizing: border-box;
     }
 
@@ -51,144 +56,197 @@ export class Sidebar extends LitElement {
     }
 
     header h1 {
-      color: #fff;
+      color: #111827;
       font-weight: 600;
-      font-size: 1.1rem;
+      font-size: 1.25rem;
       margin: 0;
       letter-spacing: -0.02em;
       font-family: 'Geist', sans-serif;
     }
 
     .logo {
-      width: 40px;
-      height: 40px;
-      background: #171717;
-      border: 1px solid #262626;
-      border-radius: 10px;
+      width: 44px;
+      height: 44px;
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
       display: flex;
       align-items: center;
       justify-content: center;
-      color: #fff;
-      font-weight: bold;
+      color: #111827;
+      font-weight: 700;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      font-size: 18px;
     }
 
-    form {
-      display: flex;
-      flex-direction: column;
-      gap: 24px;
-      width: 100%;
-    }
-
-    .input-container {
+    .prompt-section {
       display: flex;
       flex-direction: column;
       gap: 12px;
-      width: 100%;
-      border: 1px solid #262626;
-      background: #0a0a0a;
-      padding: 16px;
-      border-radius: 12px;
-      transition: border-color 0.2s ease;
     }
 
-    .input-container:focus-within {
-      border-color: #404040;
-    }
-
-    .label {
-      color: #737373;
+    .prompt-section h3 {
       font-size: 11px;
-      font-weight: 500;
+      font-weight: 600;
+      color: #6b7280;
       text-transform: uppercase;
       letter-spacing: 0.05em;
+      margin: 0 4px;
     }
 
-    input {
-      display: block;
+    .input-card {
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      transition: all 0.3s ease;
+    }
+
+    .input-card:focus-within {
+      border-color: #4f46e5;
+      box-shadow: 0 10px 30px rgba(79, 70, 229, 0.08);
+      transform: translateY(-2px);
+    }
+
+    textarea {
       width: 100%;
       border: none;
       background: transparent;
-      font-size: 15px;
-      color: #fff;
+      font-size: 16px;
+      color: #111827;
       font-family: 'Geist', sans-serif;
       outline: none;
+      resize: none;
+      line-height: 1.6;
+      min-height: 80px;
     }
 
-    input::placeholder {
-      color: #404040;
+    textarea::placeholder {
+      color: #9ca3af;
+    }
+
+    .actions {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
     }
 
     button {
-      align-self: flex-end;
-      background: #fff;
-      color: #000;
+      background: #111827;
+      color: #ffffff;
       border: none;
-      padding: 10px 20px;
-      border-radius: 8px;
-      font-size: 13px;
+      padding: 12px 24px;
+      border-radius: 12px;
+      font-size: 14px;
       font-weight: 600;
       cursor: pointer;
       transition: all 0.2s ease;
       font-family: 'Geist', sans-serif;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
 
     button:disabled {
-      opacity: 0.5;
+      background: #9ca3af;
       cursor: not-allowed;
+      box-shadow: none;
     }
 
     button:hover:not([disabled]) {
-      background: #e5e5e5;
+      background: #000000;
+      transform: scale(1.02);
     }
 
     .status-panel {
       margin-top: auto;
-      font-size: 10px;
-      color: #404040;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      border-top: 1px solid #171717;
-      padding-top: 20px;
+      font-size: 11px;
+      color: #9ca3af;
+      display: flex;
+      justify-content: space-between;
+      border-top: 1px solid #e5e7eb;
+      padding-top: 24px;
+    }
+
+    .status-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      background: #10b981;
+      border-radius: 50%;
+      margin-right: 6px;
+    }
+
+    .status-dot.working {
+      background: #f59e0b;
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 1; }
+      50% { opacity: 0.4; }
+      100% { opacity: 1; }
     }
   `;
 
   render() {
     return html`
-      <header>
-        <div class="logo">A2</div>
-        <h1>${this.config?.title || "Studio"}</h1>
-      </header>
+      <div class="sidebar-container">
+        <header>
+          <div class="logo">A2</div>
+          <h1>${this.config?.title || "Studio"}</h1>
+        </header>
 
-      <form @submit=${this._handleSubmit}>
-        <div class="input-container">
-          <span class="label">Prompt AI</span>
-          <input
-            required
-            placeholder="${this.config?.placeholder || "Describe your UI..."}"
-            autocomplete="off"
-            id="body"
-            name="body"
-            type="text"
-            ?disabled=${this.requesting}
-          />
-          <button type="submit" ?disabled=${this.requesting}>
-            ${this.requesting ? 'Executing...' : 'Run Command'}
-          </button>
+        <div class="prompt-section">
+          <h3>Prompt AI</h3>
+          <form @submit=${this._handleSubmit}>
+            <div class="input-card">
+              <textarea
+                required
+                placeholder="${this.config?.placeholder || "Describe the UI you want to build..."}"
+                autocomplete="off"
+                id="body"
+                name="body"
+                ?disabled=${this.requesting}
+                @keydown=${this._handleKeyDown}
+              ></textarea>
+              
+              <div class="actions">
+                <button type="submit" ?disabled=${this.requesting}>
+                  ${this.requesting ? 'Executing...' : 'Run Command'}
+                </button>
+              </div>
+            </div>
+          </form>
         </div>
-      </form>
 
-      <div class="status-panel">
-        Status: ${this.requesting ? 'Processing' : 'Idle'} | 
-        Rendered: ${this.renderedCount} Units
+        <div class="status-panel">
+          <span>
+            <span class="status-dot ${this.requesting ? 'working' : ''}"></span>
+            ${this.requesting ? 'Processing...' : 'System Ready'}
+          </span>
+          <span>${this.renderedCount} Units</span>
+        </div>
       </div>
     `;
   }
 
+  private _handleKeyDown(e: KeyboardEvent) {
+    if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+      this._handleSubmit(e);
+    }
+  }
+
   private _handleSubmit(evt: Event) {
     evt.preventDefault();
-    const form = evt.target as HTMLFormElement;
-    const data = new FormData(form);
-    const body = data.get("body") ?? "";
+    const form = this.shadowRoot?.querySelector('form');
+    if (!form) return;
+
+    const textarea = form.querySelector('textarea');
+    const body = textarea?.value || "";
+    if (!body.trim()) return;
     
     this.dispatchEvent(new CustomEvent("submit-prompt", {
       detail: { body },
@@ -196,7 +254,6 @@ export class Sidebar extends LitElement {
       composed: true
     }));
 
-    const input = form.querySelector('input');
-    if (input) input.value = '';
+    if (textarea) textarea.value = '';
   }
 }

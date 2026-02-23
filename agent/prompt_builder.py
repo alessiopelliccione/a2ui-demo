@@ -89,6 +89,7 @@ def get_ui_prompt(examples: str) -> str:
     2. The first part is your conversational text response explaining what you created
     3. The second part is a single, raw JSON object which is a list of A2UI messages
     4. The JSON part MUST validate against the A2UI JSON SCHEMA provided below
+    5. CRITICAL: Every JSON response MUST start with a `beginRendering` message to initialize the surface. Even for updates or button clicks, you must redefine the surface root.
 
     UI TEMPLATE SELECTION RULES:
     - For headlines/hero sections: Use HEADLINE_EXAMPLE
