@@ -4,26 +4,26 @@ This diagram illustrates the macro logical flow of the A2UI system, focusing on 
 
 ```mermaid
 graph LR
-    subgraph "User"
-        User((User))
+    subgraph UserGroup ["User"]
+        UserNode((User))
     end
 
-    subgraph "Frontend (Web/Mobile)"
+    subgraph FrontendGroup ["Frontend (Web/Mobile)"]
         UI[<b>A2UI Shell</b><br/>Chat Interface]
         Renderer[<b>Dynamic Renderer</b><br/>UI Components]
     end
 
-    subgraph "Backend (Python Agent)"
+    subgraph BackendGroup ["Backend (Python Agent)"]
         Agent[<b>A2UI Agent</b><br/>Orchestrator]
         Schema[<b>A2UI Schema</b><br/>Contract Validation]
     end
 
-    subgraph "Artificial Intelligence"
+    subgraph AIGroup ["Artificial Intelligence"]
         LLM((<b>LLM</b><br/>Gemini / GPT / Claude))
     end
 
     %% Forward Flow (Prompt)
-    User -- "1. Natural Language Request" --> UI
+    UserNode -- "1. Natural Language Request" --> UI
     UI -- "2. API Call" --> Agent
     Agent -- "3. Prompt + Examples" --> LLM
 
@@ -33,7 +33,7 @@ graph LR
     Schema -- "6. Validated JSON" --> Agent
     Agent -- "7. Stream UI Data" --> UI
     UI -- "8. Dynamic Rendering" --> Renderer
-    Renderer -- "9. UI Interaction" --> User
+    Renderer -- "9. UI Interaction" --> UserNode
 
     %% Presentation styles
     style UI fill:#e1f5fe,stroke:#01579b,stroke-width:2px
