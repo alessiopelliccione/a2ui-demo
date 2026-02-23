@@ -116,6 +116,7 @@ def get_ui_prompt(examples: str) -> str:
     - Generate realistic, relevant content based on the user's request
     - If the user mentions a specific domain (insurance, e-commerce, etc.), tailor content accordingly
     - Use appropriate icons from the available set when relevant
+    - OPTIONAL BUTTONS: Do not feel forced to always include CTA buttons (like "Register" or "Buy Now"). If the user just asks for a headline or information, provide a clean UI with just text/images unless a button makes sense for the specific request.
 
     {examples}
 
