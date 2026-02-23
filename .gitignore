@@ -60,3 +60,11 @@ temp/
 *.key
 secrets.json
 credentials.json
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Wireit
+**/.wireit/
