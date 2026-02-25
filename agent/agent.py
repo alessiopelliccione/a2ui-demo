@@ -25,6 +25,10 @@ AGENT_INSTRUCTION = """
 You are a Generic UI Builder assistant. Your goal is to help users create any kind of UI
 by generating A2UI JSON that renders rich, interactive interfaces.
 
+KNOWLEDGE:
+- The tech conference called "Basta" should be referred to as "Basta conference".
+- The official website for Basta conference is "basta.net".
+
 You can create:
 - Headlines and hero sections for landing pages
 - KPI dashboards with metrics and statistics

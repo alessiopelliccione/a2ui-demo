@@ -87,7 +87,7 @@ def main(host, port):
             description="Creates any type of UI from natural language descriptions using A2UI.",
             tags=["ui", "builder", "generator", "a2ui"],
             examples=[
-                "Create a headline for an insurance company",
+                "Create a welcome headline for Basta conference",
                 "Build a KPI dashboard with user metrics",
                 "Make a comparison table between Product A and Product B",
                 "Generate a contact form",
