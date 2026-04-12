@@ -32,25 +32,27 @@
 
     <style>
       :root {
-        /* Neutral Palette - LIGHT STUDIO */
-        --n-0: #ffffff;
-        --n-10: #f9fafb;
-        --n-20: #f3f4f6;
-        --n-30: #e5e7eb;
-        --n-40: #d1d5db;
-        --n-50: #9ca3af;
-        --n-60: #4b5563;
-        --n-70: #374151;
-        --n-80: #1f2937;
-        --n-90: #111827;
-        --n-100: #000000;
+        /* Premium Finance/Insurance Dark Palette */
+        --n-0: #0a0e17;
+        --n-10: #111827;
+        --n-20: #1f2937;
+        --n-30: #374151;
+        --n-40: #4b5563;
+        --n-50: #6b7280;
+        --n-60: #9ca3af;
+        --n-70: #d1d5db;
+        --n-80: #f3f4f6;
+        --n-90: #f9fafb;
+        --n-100: #ffffff;
 
-        /* Accents: Professional Indigo */
-        --p-60: #4f46e5; 
-        --p-40: #4338ca;
-        --s-60: #db2777;
+        /* Accents: Finance Neon (Green/Teal & Blue) */
+        --p-60: #10b981; 
+        --p-40: #059669;
+        --s-60: #3b82f6;
 
-        --background: #ffffff;
+        --background: linear-gradient(135deg, #0a0e17 0%, #111827 100%);
+        --glass-bg: rgba(31, 41, 55, 0.4);
+        --glass-border: rgba(255, 255, 255, 0.05);
         --bb-grid-size: 4px;
       }
 
@@ -73,8 +75,18 @@
         height: 100vh;
         overflow: hidden;
 
-        --color-scheme: light;
-        color-scheme: light;
+        --color-scheme: dark;
+        color-scheme: dark;
+      }
+      @keyframes floatUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      
+      @keyframes pulseGlow {
+        0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+        70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
       }
     </style>
   </head>

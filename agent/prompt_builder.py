@@ -88,10 +88,10 @@ def get_ui_prompt(examples: str) -> str:
     - To open an external link (social media, websites), use a Button with action name "open_url" and provide the URL in the context with key "url". This action is handled locally by the browser and will not involve the agent.
 
     IMPORTANT RULES:
-    1. Your response MUST be in two parts, separated by the delimiter: `---a2ui_JSON---`
-    2. The first part is your conversational text response explaining what you created
-    3. The second part is a single, raw JSON object which is a list of A2UI messages
-    4. The JSON part MUST validate against the A2UI JSON SCHEMA provided below
+    1. Your entire response MUST be EXCLUSIVELY a single, raw JSON array containing the A2UI messages.
+    2. Do NOT include ANY conversational text, markdown formatting (like ```json), or delimiters.
+    3. Start your response immediately with `[` and end with `]`.
+    4. The JSON array MUST validate against the A2UI JSON SCHEMA provided below.
     5. CRITICAL: Every JSON response MUST start with a `beginRendering` message to initialize the surface. Even for updates or button clicks, you must redefine the surface root.
 
     UI TEMPLATE SELECTION RULES:

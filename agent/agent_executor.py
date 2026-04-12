@@ -125,32 +125,20 @@ class UIBuilderAgentExecutor(AgentExecutor):
             content = item["content"]
             final_parts = []
 
-            if "---a2ui_JSON---" in content:
-                logger.info("Splitting final response into text and UI parts.")
-                text_content, json_string = content.split("---a2ui_JSON---", 1)
+            try:
+                json_string_cleaned = content.strip().lstrip("```json").rstrip("```").strip()
+                json_data = json.loads(json_string_cleaned)
 
-                if text_content.strip():
-                    final_parts.append(Part(root=TextPart(text=text_content.strip())))
+                if isinstance(json_data, list):
+                    logger.info(f"Found {len(json_data)} messages. Creating individual DataParts.")
+                    for message in json_data:
+                        final_parts.append(create_a2ui_part(message))
+                else:
+                    logger.info("Received single JSON object. Creating DataPart.")
+                    final_parts.append(create_a2ui_part(json_data))
 
-                if json_string.strip():
-                    try:
-                        json_string_cleaned = (
-                            json_string.strip().lstrip("```json").rstrip("```").strip()
-                        )
-                        json_data = json.loads(json_string_cleaned)
-
-                        if isinstance(json_data, list):
-                            logger.info(f"Found {len(json_data)} messages. Creating individual DataParts.")
-                            for message in json_data:
-                                final_parts.append(create_a2ui_part(message))
-                        else:
-                            logger.info("Received single JSON object. Creating DataPart.")
-                            final_parts.append(create_a2ui_part(json_data))
-
-                    except json.JSONDecodeError as e:
-                        logger.error(f"Failed to parse UI JSON: {e}")
-                        final_parts.append(Part(root=TextPart(text=json_string)))
-            else:
+            except json.JSONDecodeError as e:
+                logger.error(f"Failed to parse UI JSON directly: {e}")
                 final_parts.append(Part(root=TextPart(text=content.strip())))
 
             logger.info("--- FINAL PARTS TO BE SENT ---")

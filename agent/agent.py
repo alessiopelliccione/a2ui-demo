@@ -186,18 +186,8 @@ class UIBuilderAgent:
             if self.use_ui:
                 logger.info(f"Validating UI response (Attempt {attempt})...")
                 try:
-                    if "---a2ui_JSON---" not in final_response_content:
-                        raise ValueError("Delimiter '---a2ui_JSON---' not found.")
-
-                    text_part, json_string = final_response_content.split(
-                        "---a2ui_JSON---", 1
-                    )
-
-                    if not json_string.strip():
-                        raise ValueError("JSON part is empty.")
-
                     json_string_cleaned = (
-                        json_string.strip().lstrip("```json").rstrip("```").strip()
+                        final_response_content.strip().lstrip("```json").rstrip("```").strip()
                     )
 
                     if not json_string_cleaned:

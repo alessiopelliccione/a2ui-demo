@@ -59,7 +59,7 @@ export class A2UILayoutEditor extends SignalWatcher(LitElement) {
       flex-direction: row;
       width: 100vw;
       height: 100vh;
-      background: #ffffff;
+      background: transparent;
       overflow: hidden;
       margin: 0;
       padding: 0;
