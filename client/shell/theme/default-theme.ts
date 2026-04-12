@@ -16,6 +16,12 @@
 
 import { v0_8 } from "@a2ui/lit";
 
+// Punto di verità unico per i colori imposti al motore
+export const DesignSystemConfig = {
+  primaryColor: "#10B981", 
+  font: "Geist"
+};
+
 export const theme: v0_8.Types.Theme = {
   additionalStyles: {
     Button: {

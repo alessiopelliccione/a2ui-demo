@@ -18,7 +18,7 @@ import { SignalWatcher } from "@lit-labs/signals";
 import { provide } from "@lit/context";
 import { LitElement, html, css, nothing, HTMLTemplateResult, unsafeCSS } from "lit";
 import { customElement, state } from "lit/decorators.js";
-import { theme as uiTheme } from "./theme/default-theme.js";
+import { theme as uiTheme, DesignSystemConfig } from "./theme/default-theme.js";
 import { A2UIClient } from "./client.js";
 import { SnackbarAction, SnackbarMessage, SnackbarUUID, SnackType } from "./types/types.js";
 import { type Snackbar } from "./ui/snackbar.js";
@@ -178,13 +178,10 @@ export class A2UILayoutEditor extends SignalWatcher(LitElement) {
       this.#stopLoadingAnimation();
       this.#lastMessages = messages;
 
-      // Il Design System comanda: blocchiamo l'AI e forziamo sempre lo stesso verde ufficiale!
+      // Il Design System comanda: blocchiamo l'AI e forziamo la nostra configurazione centralizzata!
       messages.forEach(msg => {
         if (msg.beginRendering) {
-          msg.beginRendering.styles = {
-            primaryColor: "#10B981", // Verde ufficiale
-            font: "Geist"
-          };
+          msg.beginRendering.styles = { ...DesignSystemConfig };
         }
       });
 

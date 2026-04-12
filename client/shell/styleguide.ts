@@ -1,5 +1,5 @@
 import { v0_8 } from "@a2ui/lit";
-import { theme as uiTheme } from "./theme/default-theme";
+import { theme as uiTheme, DesignSystemConfig } from "./theme/default-theme";
 import * as UI from "@a2ui/lit/ui";
 import { LitElement, html, css } from "lit";
 import { customElement } from "lit/decorators.js";
@@ -11,7 +11,10 @@ const STYLEGUIDE_UI: v0_8.Types.ServerToClientMessage[] = [
   {
     beginRendering: {
       surfaceId: "styleguide",
-      root: "kitchen-sink"
+      root: "kitchen-sink",
+      // Lo Styleguide simula esattamente quello che farà app.ts 
+      // caricandolo dall'unico punto di verità centralizzato!
+      styles: { ...DesignSystemConfig } as any
     }
   },
   {
