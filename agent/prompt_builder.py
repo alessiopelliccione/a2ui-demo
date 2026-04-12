@@ -93,6 +93,7 @@ def get_ui_prompt(examples: str) -> str:
     3. Start your response immediately with `[` and end with `]`.
     4. The JSON array MUST validate against the A2UI JSON SCHEMA provided below.
     5. CRITICAL: Every JSON response MUST start with a `beginRendering` message to initialize the surface. Even for updates or button clicks, you must redefine the surface root.
+    6. CRITICAL: Do NOT apply any "styles" object in beginRendering. Colors and fonts are managed securely by the Client's strict Design System.
 
     UI TEMPLATE SELECTION RULES:
     - For headlines/hero sections: Use HEADLINE_EXAMPLE
@@ -110,7 +111,6 @@ def get_ui_prompt(examples: str) -> str:
 
     - To make UI more compact: Use fewer components, shorter text, smaller usageHints (h3 instead of h1)
     - To make UI mobile-first: Use Column layout instead of Row, stack elements vertically
-    - To change colors: Modify the primaryColor in beginRendering styles
 
     CONTENT GENERATION:
     - Generate realistic, relevant content based on the user's request

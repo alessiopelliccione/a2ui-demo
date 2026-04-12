@@ -177,6 +177,17 @@ export class A2UILayoutEditor extends SignalWatcher(LitElement) {
       this.#requesting = false;
       this.#stopLoadingAnimation();
       this.#lastMessages = messages;
+
+      // Il Design System comanda: blocchiamo l'AI e forziamo sempre lo stesso verde ufficiale!
+      messages.forEach(msg => {
+        if (msg.beginRendering) {
+          msg.beginRendering.styles = {
+            primaryColor: "#10B981", // Verde ufficiale
+            font: "Geist"
+          };
+        }
+      });
+
       this.#processor.clearSurfaces();
       this.#processor.processMessages(messages);
     } catch (err) {

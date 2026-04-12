@@ -31,67 +31,41 @@
     />
 
     <style>
-      :root {
-        /* Premium Finance/Insurance Dark Palette */
-        --n-0: #0a0e17;
-        --n-10: #111827;
-        --n-20: #1f2937;
-        --n-30: #374151;
-        --n-40: #4b5563;
-        --n-50: #6b7280;
-        --n-60: #9ca3af;
-        --n-70: #d1d5db;
-        --n-80: #f3f4f6;
-        --n-90: #f9fafb;
-        --n-100: #ffffff;
-
-        /* Accents: Finance Neon (Green/Teal & Blue) */
-        --p-60: #10b981; 
-        --p-40: #059669;
-        --s-60: #3b82f6;
-
-        --background: linear-gradient(135deg, #0a0e17 0%, #111827 100%);
-        --glass-bg: rgba(31, 41, 55, 0.4);
-        --glass-border: rgba(255, 255, 255, 0.05);
-        --bb-grid-size: 4px;
-      }
-
-      * {
-        box-sizing: border-box;
-        -webkit-font-smoothing: antialiased;
-      }
-
-      html,
-      body {
-        --font-family: 'Geist', sans-serif;
-        --font-family-mono: 'Geist Mono', monospace;
-
-        background: var(--background);
-        color: var(--n-80);
-        font-family: var(--font-family);
+      * { box-sizing: border-box; -webkit-font-smoothing: antialiased; }
+      body, html {
         margin: 0;
         padding: 0;
         width: 100vw;
         height: 100vh;
         overflow: hidden;
-
-        --color-scheme: dark;
-        color-scheme: dark;
+        background: #f9fafb;
+        font-family: 'Geist', sans-serif;
       }
-      @keyframes floatUp {
-        from { opacity: 0; transform: translateY(20px); }
-        to { opacity: 1; transform: translateY(0); }
-      }
-      
-      @keyframes pulseGlow {
-        0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
-        70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
-        100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+      .ds-link {
+        position: absolute;
+        top: 24px;
+        right: 48px;
+        color: #10B981;
+        text-decoration: none;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        z-index: 1000;
+        background: white;
+        padding: 8px 16px;
+        border-radius: 8px;
+        border: 1px solid #e5e7eb;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
       }
     </style>
   </head>
 
   <body>
+    <a href="components.html" class="ds-link">
+      <span class="material-symbols-outlined">palette</span> Design System
+    </a>
+
     <a2ui-shell></a2ui-shell>
     <script type="module" src="./app.ts"></script>
   </body>

@@ -5,7 +5,7 @@ UI_BUILDER_EXAMPLES = """
 ---BEGIN FINANCE_PORTFOLIO_DASHBOARD---
 Description: Use this example when the user asks for a financial dashboard, portfolio overview, or investment performance.
 [
-  {{ "beginRendering": {{ "surfaceId": "default", "root": "dashboard-root", "styles": {{ "primaryColor": "#10B981", "font": "Geist" }} }} }},
+  {{ "beginRendering": {{ "surfaceId": "default", "root": "dashboard-root" }} }},
   {{ "surfaceUpdate": {{
     "surfaceId": "default",
     "components": [
@@ -64,7 +64,7 @@ Description: Use this example when the user asks for a financial dashboard, port
 ---BEGIN INSURANCE_POLICY_COMPARISON---
 Description: Use this example when the user asks for a comparison of insurance plans, policies, or coverage options.
 [
-  {{ "beginRendering": {{ "surfaceId": "default", "root": "comparison-root", "styles": {{ "primaryColor": "#3B82F6", "font": "Geist" }} }} }},
+  {{ "beginRendering": {{ "surfaceId": "default", "root": "comparison-root" }} }},
   {{ "surfaceUpdate": {{
     "surfaceId": "default",
     "components": [
@@ -117,7 +117,7 @@ Description: Use this example when the user asks for a comparison of insurance p
 ---BEGIN CLAIM_REPORTING_WIZARD---
 Description: Use this example when the user asks for a stepper, wizard, or process to report an incident or file an insurance claim.
 [
-  {{ "beginRendering": {{ "surfaceId": "default", "root": "stepper-root", "styles": {{ "primaryColor": "#EC4899", "font": "Geist" }} }} }},
+  {{ "beginRendering": {{ "surfaceId": "default", "root": "stepper-root" }} }},
   {{ "surfaceUpdate": {{
     "surfaceId": "default",
     "components": [

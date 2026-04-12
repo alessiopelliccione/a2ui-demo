@@ -33,22 +33,12 @@ export class Canvas extends LitElement {
       flex: 1;
       height: 100vh;
       overflow-y: auto;
-      padding: 80px; /* Aumentato per dare respiro */
-      background: #fdfdfd; /* Grigio quasi bianco per staccare dalla sidebar */
+      padding: 80px; 
+      background: #f9fafb;
       display: flex;
       flex-direction: column;
       position: relative;
       box-sizing: border-box;
-
-      /* FORZA IL TESTO SCURO NEL CANVAS (TEMA LIGHT) */
-      --n-10: #111827;
-      --n-20: #1f2937;
-      --n-30: #374151;
-      --n-40: #4b5563;
-      --n-50: #6b7280;
-      --n-80: #111827;
-      --n-90: #000000;
-      --n-100: #ffffff;
     }
 
     /* Contenitore interno per centrare senza tagliare */
