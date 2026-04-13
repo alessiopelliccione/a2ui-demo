@@ -1,5 +1,5 @@
-# Generic UI Builder Agent
-# Demo for Generative Frontend / Server-Driven UI session
+# Insurance Assistant Agent
+# Template-based architecture: AI picks templates, Python generates A2UI.
 
 import json
 import logging
@@ -16,8 +16,8 @@ from google.adk.runners import Runner
 from google.adk.sessions import InMemorySessionService
 from google.genai import types
 
-from prompt_builder import A2UI_SCHEMA, get_text_prompt, get_ui_prompt
-from a2ui_examples import UI_BUILDER_EXAMPLES
+from prompt_builder import A2UI_SCHEMA, get_text_prompt, get_template_prompt
+from a2ui_templates import render_template
 
 logger = logging.getLogger(__name__)
 
@@ -36,9 +36,8 @@ YOUR ROLE:
 
 HOW YOU RESPOND:
 - Always be helpful, clear, and empathetic
-- When the user asks about policies, comparisons, or claims, generate interactive UI
-  components so they can see and interact with the information
-- When the user asks a simple question, just answer conversationally without UI
+- When the user asks about policies, comparisons, or claims, use a template to show interactive UI
+- When the user asks a simple question, just answer conversationally without a template
 - Use realistic insurance data and terminology
 - Proactively suggest next steps ("Would you like to compare plans?" or "I can help you file a claim")
 
@@ -47,18 +46,11 @@ KNOWLEDGE:
 - You know about auto, home, health, and life insurance products
 - Premium ranges, deductible options, and coverage tiers are realistic
 - The tech conference called "Basta" should be referred to as "Basta conference" with website "basta.net"
-
-When generating UI:
-1. Choose the most appropriate pattern from the examples
-2. Customize content based on the user's specific insurance needs
-3. Generate valid A2UI JSON
-
-Be creative but always ensure the JSON is valid according to the A2UI schema.
 """
 
 
 class UIBuilderAgent:
-    """A generic UI Builder agent that creates any type of UI using A2UI."""
+    """Insurance assistant that uses templates for UI generation."""
 
     SUPPORTED_CONTENT_TYPES = ["text", "text/plain"]
 
@@ -74,7 +66,7 @@ class UIBuilderAgent:
             memory_service=InMemoryMemoryService(),
         )
 
-        # Load and wrap the schema for validation
+        # Load schema for optional validation of template output
         try:
             single_message_schema = json.loads(A2UI_SCHEMA)
             self.a2ui_schema_object = {"type": "array", "items": single_message_schema}
@@ -84,39 +76,31 @@ class UIBuilderAgent:
             self.a2ui_schema_object = None
 
     def get_processing_message(self) -> str:
-        return "Generating your UI..."
+        return "Generating your response..."
 
     def _build_agent(self, use_ui: bool) -> LlmAgent:
-        """Builds the LLM agent for the UI builder.
+        """Builds the LLM agent.
 
         Supported models via LiteLLM:
-        - Gemini: gemini/gemini-2.5-flash, gemini/gemini-2.5-pro, gemini/gemini-1.5-pro
-        - OpenAI: gpt-4o, gpt-4o-mini, gpt-4-turbo, gpt-3.5-turbo
-        - Anthropic: claude-3-5-sonnet-20241022, claude-3-opus-20240229
-        - Azure: azure/gpt-4o, azure/gpt-4
-        - And many more: https://docs.litellm.ai/docs/providers
-
-        Set via environment variable:
-        - LITELLM_MODEL=gpt-4o (for OpenAI)
-        - LITELLM_MODEL=gemini/gemini-2.5-flash (for Gemini)
-        - LITELLM_MODEL=claude-3-5-sonnet-20241022 (for Anthropic)
+        - Gemini: gemini/gemini-2.5-flash, gemini/gemini-2.5-pro
+        - OpenAI: gpt-4o, gpt-4o-mini
+        - Anthropic: claude-3-5-sonnet-20241022
+        Set via LITELLM_MODEL env var.
         """
-        # Default to Gemini, but easily switchable via env var
         LITELLM_MODEL = os.getenv("LITELLM_MODEL", "gemini/gemini-2.5-flash")
-
         logger.info(f"Using LLM model: {LITELLM_MODEL}")
 
         if use_ui:
-            instruction = AGENT_INSTRUCTION + get_ui_prompt(UI_BUILDER_EXAMPLES)
+            instruction = AGENT_INSTRUCTION + get_template_prompt()
         else:
             instruction = get_text_prompt()
 
         return LlmAgent(
             model=LiteLlm(model=LITELLM_MODEL),
             name="ui_builder_agent",
-            description="A generic UI builder that creates rich interfaces from natural language.",
+            description="An insurance assistant that creates rich interfaces from templates.",
             instruction=instruction,
-            tools=[],  # No external tools needed - pure UI generation
+            tools=[],
         )
 
     async def stream(self, query, session_id) -> AsyncIterable[dict[str, Any]]:
@@ -133,49 +117,52 @@ class UIBuilderAgent:
                 session_id=session_id,
             )
 
-        # Validation and retry logic
         max_retries = 1
         attempt = 0
         current_query_text = query
 
-        if self.use_ui and self.a2ui_schema_object is None:
-            logger.error("A2UI_SCHEMA is not loaded. Cannot perform UI validation.")
-            yield {
-                "is_task_complete": True,
-                "content": "Internal configuration error. Please contact support.",
-            }
-            return
-
         while attempt <= max_retries:
             attempt += 1
-            logger.info(f"UI Builder: Attempt {attempt}/{max_retries + 1} for session {session_id}")
+            logger.info(f"Attempt {attempt}/{max_retries + 1} for session {session_id}")
 
             current_message = types.Content(
                 role="user", parts=[types.Part.from_text(text=current_query_text)]
             )
             final_response_content = None
 
-            async for event in self._runner.run_async(
-                user_id=self._user_id,
-                session_id=session.id,
-                new_message=current_message,
-            ):
-                logger.info(f"Event from runner: {event}")
-                if event.is_final_response():
-                    if (
-                        event.content
-                        and event.content.parts
-                        and event.content.parts[0].text
-                    ):
-                        final_response_content = "\n".join(
-                            [p.text for p in event.content.parts if p.text]
-                        )
-                    break
+            # ── LLM call with retry on failure ──
+            try:
+                async for event in self._runner.run_async(
+                    user_id=self._user_id,
+                    session_id=session.id,
+                    new_message=current_message,
+                ):
+                    if event.is_final_response():
+                        if (
+                            event.content
+                            and event.content.parts
+                            and event.content.parts[0].text
+                        ):
+                            final_response_content = "\n".join(
+                                [p.text for p in event.content.parts if p.text]
+                            )
+                        break
+                    else:
+                        yield {
+                            "is_task_complete": False,
+                            "updates": self.get_processing_message(),
+                        }
+            except Exception as e:
+                logger.error(f"LLM call failed (Attempt {attempt}): {e}")
+                if attempt <= max_retries:
+                    current_query_text = f"Please retry: '{query}'"
+                    continue
                 else:
                     yield {
-                        "is_task_complete": False,
-                        "updates": self.get_processing_message(),
+                        "is_task_complete": True,
+                        "content": json.dumps({"message": "Sorry, I'm having trouble right now. Please try again."}),
                     }
+                    return
 
             if final_response_content is None:
                 logger.warning(f"No final response content (Attempt {attempt})")
@@ -183,56 +170,77 @@ class UIBuilderAgent:
                     current_query_text = f"Please retry: '{query}'"
                     continue
                 else:
-                    final_response_content = "Sorry, I couldn't process your request."
+                    yield {
+                        "is_task_complete": True,
+                        "content": json.dumps({"message": "Sorry, I couldn't process your request."}),
+                    }
+                    return
 
+            # ── Parse and process response ──
             is_valid = False
             error_message = ""
 
             if self.use_ui:
-                logger.info(f"Validating UI response (Attempt {attempt})...")
                 try:
                     json_string_cleaned = (
-                        final_response_content.strip().lstrip("```json").rstrip("```").strip()
+                        final_response_content.strip()
+                        .lstrip("```json").lstrip("```")
+                        .rstrip("```").strip()
                     )
-
                     if not json_string_cleaned:
                         raise ValueError("Cleaned JSON string is empty.")
 
-                    parsed_json_data = json.loads(json_string_cleaned)
+                    parsed = json.loads(json_string_cleaned)
 
-                    # Support envelope format: {"message": "...", "ui": [...]}
-                    if isinstance(parsed_json_data, dict) and "ui" in parsed_json_data:
-                        ui_array = parsed_json_data["ui"]
+                    if not isinstance(parsed, dict):
+                        raise ValueError("Response must be a JSON object.")
+
+                    # ── Template rendering ──
+                    template_name = parsed.get("template")
+                    if template_name:
+                        logger.info(f"Rendering template: {template_name}")
+                        a2ui_messages = render_template(
+                            template_name, parsed.get("data", {})
+                        )
+                        if a2ui_messages:
+                            parsed = {
+                                "message": parsed.get("message", ""),
+                                "ui": a2ui_messages,
+                            }
+                            logger.info(f"Template '{template_name}' rendered {len(a2ui_messages)} A2UI messages.")
+                        else:
+                            logger.warning(f"Template '{template_name}' returned None, falling back to text-only.")
+                            parsed = {"message": parsed.get("message", "")}
+
+                    # ── Validate A2UI output (if present) ──
+                    if "ui" in parsed and self.a2ui_schema_object:
+                        ui_array = parsed["ui"]
                         if not isinstance(ui_array, list):
-                            raise ValueError("Envelope 'ui' field must be an array.")
-                        logger.info("Validating envelope 'ui' array against A2UI_SCHEMA...")
+                            raise ValueError("'ui' field must be an array.")
                         jsonschema.validate(
                             instance=ui_array, schema=self.a2ui_schema_object
                         )
-                    elif isinstance(parsed_json_data, list):
-                        # Backward compatible: raw A2UI array
-                        logger.info("Validating raw A2UI array against A2UI_SCHEMA...")
-                        jsonschema.validate(
-                            instance=parsed_json_data, schema=self.a2ui_schema_object
-                        )
-                    else:
-                        raise ValueError("Response must be an envelope object or A2UI array.")
+                        logger.info("A2UI validation passed.")
 
-                    logger.info(f"UI JSON validated successfully (Attempt {attempt})")
+                    # Must have at least a message
+                    if "message" not in parsed:
+                        raise ValueError("Response must have a 'message' field.")
+
                     is_valid = True
+                    final_response_content = json.dumps(parsed)
 
                 except (
                     ValueError,
                     json.JSONDecodeError,
                     jsonschema.exceptions.ValidationError,
                 ) as e:
-                    logger.warning(f"A2UI validation failed: {e} (Attempt {attempt})")
+                    logger.warning(f"Validation failed (Attempt {attempt}): {e}")
                     error_message = f"Validation failed: {e}."
             else:
                 is_valid = True
 
             if is_valid:
-                logger.info(f"Response valid. Sending final response (Attempt {attempt})")
+                logger.info(f"Response valid (Attempt {attempt}). Sending.")
                 yield {
                     "is_task_complete": True,
                     "content": final_response_content,
@@ -242,13 +250,12 @@ class UIBuilderAgent:
             if attempt <= max_retries:
                 logger.warning(f"Retrying... ({attempt}/{max_retries + 1})")
                 current_query_text = (
-                    f"Your previous response was invalid. {error_message} "
-                    "Generate a valid A2UI JSON response. "
-                    f"Original request: '{query}'"
+                    f"Your previous response was invalid JSON. {error_message} "
+                    f"Please respond with valid JSON. Original request: '{query}'"
                 )
 
-        logger.error("Max retries exhausted. Sending text-only error.")
+        logger.error("Max retries exhausted.")
         yield {
             "is_task_complete": True,
-            "content": "Sorry, I'm having trouble generating the UI. Please try again.",
+            "content": json.dumps({"message": "Sorry, I'm having trouble generating a response. Please try again."}),
         }

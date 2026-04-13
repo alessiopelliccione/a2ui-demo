@@ -526,6 +526,7 @@ export class A2UIShell extends SignalWatcher(LitElement) {
       this.#stopLoadingAnimation();
       this.#scrollToBottom();
     } catch (err) {
+      console.error('A2UI request failed:', err);
       this.#requesting = false;
       this.#stopLoadingAnimation();
       this.#chatHistory = [...this.#chatHistory, {

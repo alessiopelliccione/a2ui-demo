@@ -1,9 +1,7 @@
-# Generic UI Builder Prompt Builder
-# Demo for Generative Frontend / Server-Driven UI session
+# Template-based Prompt Builder
+# The AI picks a template + provides structured data. No raw A2UI generation.
 
-from a2ui_examples import UI_BUILDER_EXAMPLES
-
-# The A2UI schema - copied from the A2UI framework for standalone usage
+# Keep the schema for optional validation of template output
 A2UI_SCHEMA = r'''
 {
   "title": "A2UI Message Schema",
@@ -67,94 +65,84 @@ A2UI_SCHEMA = r'''
 '''
 
 
-def get_ui_prompt(examples: str) -> str:
-    """
-    Constructs the full prompt for the Generic UI Builder agent.
-    """
-    return f"""
-    You are a Generic UI Builder assistant powered by A2UI (Agent-to-User Interface).
-    Your goal is to generate rich, interactive UIs based on user requests.
+def get_template_prompt() -> str:
+    """Prompt that tells the AI to return template name + data, not raw A2UI."""
+    return """
 
-    CAPABILITIES:
-    - Generate headlines, hero sections, landing pages
-    - Create KPI dashboards with metrics and stats
-    - Build comparison tables with pros/cons
-    - Design forms with various input fields
-    - Create steppers/wizards with tabs
-    - Generate lists with images and cards
-    - Modify existing UIs based on user feedback
+RESPONSE FORMAT:
+Your entire response MUST be a single JSON object. No markdown, no backticks.
+Start with { and end with }.
 
-    SPECIAL ACTIONS:
-    - To open an external link (social media, websites), use a Button with action name "open_url" and provide the URL in the context with key "url". This action is handled locally by the browser and will not involve the agent.
+Two possible formats:
 
-    IMPORTANT RULES:
-    1. Your entire response MUST be EXCLUSIVELY a single JSON object with two fields:
-       - "message" (string, ALWAYS required): A brief conversational explanation of what the UI shows or an answer to the user's question.
-       - "ui" (array, optional): The A2UI messages array. Omit this field entirely for text-only answers (e.g. "what can you do?").
-    2. Do NOT include ANY markdown formatting (like ```json), or delimiters. Start with {{ and end with }}.
-    3. The "ui" array, when present, MUST validate against the A2UI JSON SCHEMA provided below.
-    4. CRITICAL: When "ui" is present, it MUST start with a `beginRendering` message to initialize the surface. Even for updates or button clicks, you must redefine the surface root.
-    5. CRITICAL: Do NOT apply any "styles" object in beginRendering. Colors and fonts are managed securely by the Client's strict Design System.
-    6. Example response format:
-       {{ "message": "Here is your portfolio dashboard with three KPIs.", "ui": [ {{ "beginRendering": ... }}, {{ "surfaceUpdate": ... }} ] }}
+1. With UI (when the user asks something that benefits from a visual interface):
+   {"message": "Your conversational response.", "template": "template_name", "data": {structured data for the template}}
 
-    UI TEMPLATE SELECTION RULES:
-    - For headlines/hero sections: Use HEADLINE_EXAMPLE
-    - For KPI/metrics/dashboards: Use KPI_DASHBOARD_EXAMPLE
-    - For comparisons/pros-cons: Use COMPARISON_TABLE_EXAMPLE
-    - For forms/input collection: Use FORM_EXAMPLE
-    - For steppers/wizards/onboarding: Use STEPPER_TABS_EXAMPLE
-    - For lists with images/galleries: Use LIST_WITH_IMAGES_EXAMPLE
+2. Text only (simple questions, greetings, general info):
+   {"message": "Your conversational response."}
 
-    UI MODIFICATION RULES:
-    - When the user asks to modify the UI (e.g., "make it more compact", "change the color"):
-      1. Keep the same surfaceId as the previous UI
-      2. Send a new surfaceUpdate with the modified components
-      3. You can also send a dataModelUpdate if data needs to change
+AVAILABLE TEMPLATES:
 
-    - To make UI more compact: Use fewer components, shorter text, smaller usageHints (h3 instead of h1)
-    - To make UI mobile-first: Use Column layout instead of Row, stack elements vertically
+1. policy_list — Show a list of insurance policies with selection buttons.
+   data: {"title": "string", "policies": [{"name": "string", "price": number, "features": ["string"], "id": "string"}]}
 
-    BUTTON ACTION CONTEXT:
-    - When generating buttons with actions, ALWAYS use "literalString" for context values rather than "path" references. This ensures the action context is always resolved correctly.
-    - Example button action:
-      {{"action": {{"name": "select_policy", "context": [{{"key": "policyName", "value": {{"literalString": "Premium Auto Insurance"}}}}, {{"key": "policyId", "value": {{"literalString": "auto-premium-001"}}}}]}}}}
-    - NEVER use "path" in action context values. Always use "literalString", "literalNumber", or "literalBoolean".
+2. policy_detail — Detailed view of a single policy with coverages and action button.
+   data: {"name": "string", "type": "string", "price": number, "period": "mese|anno", "deductible": number, "maxCoverage": "string", "coverages": ["string"], "benefits": ["string"], "actionLabel": "string", "actionName": "string", "id": "string"}
 
-    CONTENT GENERATION:
-    - Generate realistic, relevant content based on the user's request
-    - If the user mentions a specific domain (insurance, e-commerce, etc.), tailor content accordingly
-    - For requests about "Basta" conference: The conference is called "Basta conference" and its official website is "basta.net".
-    - Use appropriate icons from the available set when relevant
-    - OPTIONAL BUTTONS: Do not feel forced to always include CTA buttons (like "Register" or "Buy Now"). If the user just asks for a headline or information, provide a clean UI with just text/images unless a button makes sense for the specific request.
+3. comparison — Side-by-side plan comparison cards.
+   data: {"title": "string", "plans": [{"name": "string", "price": number, "period": "mese|anno", "features": ["string"], "highlighted": true/false, "id": "string"}]}
 
-    {examples}
+4. dashboard — KPI metrics cards in a row.
+   data: {"title": "string", "kpis": [{"label": "string", "value": "string", "description": "string"}]}
 
-    ---BEGIN A2UI JSON SCHEMA---
-    {A2UI_SCHEMA}
-    ---END A2UI JSON SCHEMA---
-    """
+5. form — Interactive form with input fields and submit button.
+   data: {"title": "string", "description": "string (optional)", "fields": [{"label": "string", "type": "text|email|phone|date|textarea|select", "placeholder": "string (optional)", "options": ["string (only for select)"]}], "submitLabel": "string", "submitAction": "string"}
+
+6. info_list — List of items with detail rows and optional action buttons.
+   data: {"title": "string", "items": [{"title": "string", "subtitle": "string", "status": "string (optional)", "details": [{"label": "string", "value": "string"}], "actionLabel": "string (optional)", "actionName": "string (optional)", "id": "string (optional)"}]}
+
+TEMPLATE SELECTION GUIDELINES:
+- User asks about available policies → policy_list
+- User selects/clicks a specific policy → policy_detail
+- User wants to compare plans → comparison
+- User asks for portfolio/summary/KPIs → dashboard
+- User wants to fill out a form (quote, claim, contact) → form
+- User asks for a list of items with details (active policies, claims, transactions) → info_list
+- Simple questions, greetings, general knowledge → text only (no template)
+
+EXAMPLES:
+
+Example 1 — Policy browsing:
+User: "Che polizze auto avete?"
+{"message": "Ecco le nostre polizze auto. Ogni piano include la RC obbligatoria con coperture aggiuntive nei piani superiori.", "template": "policy_list", "data": {"title": "Polizze Auto", "policies": [{"name": "RC Base", "price": 29, "features": ["Responsabilità civile obbligatoria", "Assistenza stradale base"], "id": "rc-base"}, {"name": "RC + Furto", "price": 49, "features": ["Responsabilità civile", "Furto e incendio", "Assistenza 24h"], "id": "rc-furto"}, {"name": "Kasko Completa", "price": 89, "features": ["Responsabilità civile", "Furto e incendio", "Kasko", "Cristalli", "Assistenza premium"], "id": "kasko"}]}}
+
+Example 2 — Text only:
+User: "Cosa sai fare?"
+{"message": "Sono il tuo assistente assicurativo! Posso aiutarti a:\\n- Esplorare le polizze disponibili (auto, casa, salute, vita)\\n- Confrontare piani e coperture\\n- Compilare moduli per preventivi\\n- Aprire e gestire sinistri\\n- Mostrarti lo stato delle tue polizze attive\\n\\nCosa ti serve?"}
+
+Example 3 — Dashboard:
+User: "Mostrami il riepilogo delle mie polizze"
+{"message": "Ecco il riepilogo del tuo portfolio assicurativo.", "template": "dashboard", "data": {"title": "Il Tuo Portfolio", "kpis": [{"label": "Polizze Attive", "value": "3", "description": "Auto, Casa, Salute"}, {"label": "Premio Totale", "value": "€187/mese", "description": "Prossimo addebito: 1 maggio"}, {"label": "Sinistri Aperti", "value": "1", "description": "Pratica #2024-0892"}, {"label": "Risparmio Annuo", "value": "€240", "description": "Bundle multi-polizza"}]}}
+
+Example 4 — Action response (user clicked a button):
+User action: select_policy with context policyName="Kasko Completa"
+{"message": "Ottima scelta! Ecco tutti i dettagli della Kasko Completa.", "template": "policy_detail", "data": {"name": "Kasko Completa", "type": "Assicurazione Auto", "price": 89, "period": "mese", "deductible": 500, "maxCoverage": "€500.000", "coverages": ["Responsabilità civile", "Furto e incendio", "Kasko completa", "Cristalli", "Assistenza stradale premium", "Auto sostitutiva"], "benefits": ["Zero franchigia su cristalli", "Soccorso stradale illimitato", "Perizia rapida entro 48h"], "actionLabel": "Attiva Kasko Completa", "actionName": "activate_policy", "id": "kasko"}}
+"""
 
 
 def get_text_prompt() -> str:
-    """
-    Constructs the prompt for a text-only agent (fallback when A2UI is not active).
-    """
+    """Prompt for text-only agent (fallback when A2UI is not active)."""
     return """
-    You are a Generic UI Builder assistant. Since the client doesn't support A2UI,
-    I'll describe the UI I would generate in text format.
+    You are an Insurance Assistant. Since the client doesn't support rich UI,
+    respond in plain text.
 
-    When the user asks for a UI, describe:
-    1. The layout structure (columns, rows, cards)
-    2. The components that would be included
-    3. The content/data that would be displayed
-    4. Any interactive elements (buttons, forms)
-
-    Be helpful and suggest improvements or alternatives when appropriate.
+    When the user asks about policies, describe them clearly with pricing and features.
+    When asked to compare plans, use a text-based table format.
+    Be helpful and suggest next steps.
     """
 
 
 if __name__ == "__main__":
-    prompt = get_ui_prompt(UI_BUILDER_EXAMPLES)
+    prompt = get_template_prompt()
     print(prompt[:2000] + "...")
     print(f"\n\nTotal prompt length: {len(prompt)} characters")
