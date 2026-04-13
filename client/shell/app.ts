@@ -34,6 +34,7 @@ interface ChatEntry {
   role: 'user' | 'assistant';
   text: string | null;
   turnIndex: number;
+  isAction?: boolean;
 }
 
 @customElement("a2ui-shell")
@@ -59,7 +60,7 @@ export class A2UIShell extends SignalWatcher(LitElement) {
       flex-direction: column;
       width: 100vw;
       height: 100vh;
-      background: #f9fafb;
+      background: #f4f5f7;
       font-family: 'Geist', sans-serif;
       overflow: hidden;
     }
@@ -69,7 +70,7 @@ export class A2UIShell extends SignalWatcher(LitElement) {
       display: flex;
       align-items: center;
       gap: 12px;
-      padding: 16px 24px;
+      padding: 14px 24px;
       border-bottom: 1px solid #e5e7eb;
       background: white;
       flex-shrink: 0;
@@ -85,13 +86,33 @@ export class A2UIShell extends SignalWatcher(LitElement) {
       justify-content: center;
       font-weight: 700;
       font-size: 14px;
+      flex-shrink: 0;
     }
     #chat-header h1 {
       margin: 0;
-      font-size: 18px;
+      font-size: 17px;
       font-weight: 600;
       color: #111827;
+      flex: 1;
     }
+    .header-link {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: 8px;
+      border: 1px solid #e5e7eb;
+      background: #f9fafb;
+      color: #374151;
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 500;
+      font-family: 'Geist', sans-serif;
+      transition: background 0.15s;
+      flex-shrink: 0;
+    }
+    .header-link:hover { background: #f3f4f6; }
+    .header-link .material-symbols-outlined { font-size: 18px; }
 
     /* ── Messages area ── */
     #chat-messages {
@@ -106,10 +127,24 @@ export class A2UIShell extends SignalWatcher(LitElement) {
     .empty-state {
       flex: 1;
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
+      gap: 12px;
       color: #9ca3af;
       font-size: 16px;
+      text-align: center;
+    }
+    .empty-state .agent-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 16px;
+      background: #10B981;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
     }
 
     /* ── Message bubbles ── */
@@ -144,15 +179,36 @@ export class A2UIShell extends SignalWatcher(LitElement) {
       border-bottom-left-radius: 4px;
     }
 
-    /* ── Inline surfaces ── */
-    .surfaces-inline {
+    /* ── Surface canvas (computer-in-chat) ── */
+    .surface-canvas {
       margin-top: 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      max-width: 100%;
+      border: 1px solid #d1d5db;
+      border-radius: 12px;
+      background: #ffffff;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
     }
-    .surfaces-inline a2ui-surface {
+    .surface-canvas-bar {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      background: #f3f4f6;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    .surface-canvas-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #d1d5db;
+    }
+    .surface-canvas-dot.red { background: #ef4444; }
+    .surface-canvas-dot.yellow { background: #f59e0b; }
+    .surface-canvas-dot.green { background: #10b981; }
+    .surface-canvas-body {
+      padding: 20px;
+    }
+    .surface-canvas-body a2ui-surface {
       max-width: 100%;
     }
 
@@ -183,15 +239,15 @@ export class A2UIShell extends SignalWatcher(LitElement) {
 
     /* ── Input bar ── */
     #chat-input-bar {
-      padding: 16px 24px;
+      padding: 14px 24px;
       border-top: 1px solid #e5e7eb;
       background: white;
       flex-shrink: 0;
     }
     .input-wrapper {
       display: flex;
-      align-items: flex-end;
-      gap: 8px;
+      align-items: center;
+      gap: 10px;
       max-width: 900px;
       margin: 0 auto;
     }
@@ -200,12 +256,12 @@ export class A2UIShell extends SignalWatcher(LitElement) {
       resize: none;
       border: 1px solid #d1d5db;
       border-radius: 12px;
-      padding: 12px 16px;
+      padding: 10px 16px;
       font-size: 15px;
       font-family: 'Geist', sans-serif;
       line-height: 1.4;
       outline: none;
-      min-height: 44px;
+      height: 44px;
       max-height: 120px;
       transition: border-color 0.2s;
     }
@@ -248,16 +304,33 @@ export class A2UIShell extends SignalWatcher(LitElement) {
 
     return html`
       <div id="chat-header">
-        <div class="logo">A2</div>
+        <div class="logo">
+          <span class="material-symbols-outlined" style="font-size:20px">shield</span>
+        </div>
         <h1>${this.config.title}</h1>
+        <a href="components.html" class="header-link">
+          <span class="material-symbols-outlined">palette</span>
+          Components
+        </a>
       </div>
 
       <div id="chat-messages">
         ${this.#chatHistory.length === 0 && !this.#requesting ? html`
-          <div class="empty-state">${this.config.placeholder}</div>
+          <div class="empty-state">
+            <div class="agent-icon">
+              <span class="material-symbols-outlined">shield</span>
+            </div>
+            <div>${this.config.placeholder}</div>
+          </div>
         ` : nothing}
 
         ${repeat(this.#chatHistory, (e) => e.id, (entry) => {
+          // Don't show action entries as user messages
+          if (entry.role === 'user' && entry.isAction) {
+            // Render nothing for button-click actions
+            return nothing;
+          }
+
           if (entry.role === 'user') {
             return html`
               <div class="message user-message">
@@ -273,15 +346,22 @@ export class A2UIShell extends SignalWatcher(LitElement) {
             <div class="message assistant-message">
               ${entry.text ? html`<div class="bubble">${entry.text}</div>` : nothing}
               ${turnSurfaces.length > 0 ? html`
-                <div class="surfaces-inline">
-                  ${repeat(turnSurfaces, ([id]) => id, ([id, surface]) => html`
-                    <a2ui-surface
-                      .surfaceId=${id}
-                      .surface=${surface}
-                      .processor=${this.#processor}
-                      @a2uiaction=${(evt: v0_8.Events.StateEvent<"a2ui.action">) => this.#handleAction(evt, id)}
-                    ></a2ui-surface>
-                  `)}
+                <div class="surface-canvas">
+                  <div class="surface-canvas-bar">
+                    <div class="surface-canvas-dot red"></div>
+                    <div class="surface-canvas-dot yellow"></div>
+                    <div class="surface-canvas-dot green"></div>
+                  </div>
+                  <div class="surface-canvas-body">
+                    ${repeat(turnSurfaces, ([id]) => id, ([id, surface]) => html`
+                      <a2ui-surface
+                        .surfaceId=${id}
+                        .surface=${surface}
+                        .processor=${this.#processor}
+                        @a2uiaction=${(evt: v0_8.Events.StateEvent<"a2ui.action">) => this.#handleAction(evt, id)}
+                      ></a2ui-surface>
+                    `)}
+                  </div>
                 </div>
               ` : nothing}
             </div>`;
@@ -340,7 +420,7 @@ export class A2UIShell extends SignalWatcher(LitElement) {
     textarea.value = '';
 
     const message = text as unknown as v0_8.Types.A2UIClientEventMessage;
-    this.#sendAndProcessMessage(message, text);
+    this.#sendAndProcessMessage(message, text, false);
   }
 
   async #handleAction(evt: v0_8.Events.StateEvent<"a2ui.action">, surfaceId: string) {
@@ -376,23 +456,24 @@ export class A2UIShell extends SignalWatcher(LitElement) {
       },
     };
 
-    const actionLabel = `[Action: ${evt.detail.action.name}]`;
-    await this.#sendAndProcessMessage(message, actionLabel);
+    await this.#sendAndProcessMessage(message, null, true);
   }
 
-  async #sendAndProcessMessage(request: v0_8.Types.A2UIClientEventMessage | string, userText: string) {
+  async #sendAndProcessMessage(request: v0_8.Types.A2UIClientEventMessage | string, userText: string | null, isAction: boolean) {
     try {
       this.#requesting = true;
       this.#startLoadingAnimation();
 
-      // Add user message to chat
       this.#turnCounter++;
       const turnIndex = this.#turnCounter;
+
+      // Add user message to chat (actions are hidden but tracked)
       this.#chatHistory = [...this.#chatHistory, {
         id: `user-${turnIndex}`,
         role: 'user',
         text: userText,
         turnIndex,
+        isAction,
       }];
       this.#scrollToBottom();
 
@@ -432,7 +513,6 @@ export class A2UIShell extends SignalWatcher(LitElement) {
     } catch (err) {
       this.#requesting = false;
       this.#stopLoadingAnimation();
-      // Add error as assistant message
       this.#chatHistory = [...this.#chatHistory, {
         id: `error-${this.#turnCounter}`,
         role: 'assistant',

@@ -18,38 +18,15 @@ import { AppConfig } from "./types.js";
 
 export const config: AppConfig = {
   key: "tech",
-  title: "AI UI Builder",
-  heroImage: "", // Rimosso hero image del ristorante
+  title: "Insurance Assistant",
+  heroImage: "",
   heroImageDark: "",
-  background: `
-    radial-gradient(
-      at 0% 0%,
-      rgba(0, 255, 127, 0.15) 0px,
-      transparent 50%
-    ),
-    radial-gradient(
-      at 100% 0%,
-      rgba(0, 229, 255, 0.15) 0px,
-      transparent 50%
-    ),
-    radial-gradient(
-      at 100% 100%,
-      rgba(123, 31, 162, 0.15) 0px,
-      transparent 50%
-    ),
-    radial-gradient(
-      at 0% 100%,
-      rgba(255, 64, 129, 0.15) 0px,
-      transparent 50%
-    ),
-    #0a0a0b
-  `,
-  placeholder: "Generate a futuristic KPI dashboard...",
+  background: "",
+  placeholder: "How can I help you today? Ask about policies, claims, coverage...",
   loadingText: [
-    "Compiling UI components...",
-    "Optimizing layout...",
-    "Synthesizing visual assets...",
-    "Finalizing render...",
+    "Analyzing your request...",
+    "Checking available options...",
+    "Preparing your answer...",
   ],
   serverUrl: "http://localhost:10003",
 };
