@@ -95,8 +95,20 @@ class UIBuilderAgentExecutor(AgentExecutor):
                 query = f"User wants to view item with ID: {item_id}. Generate a detailed item view."
             elif action == "complete_wizard":
                 query = "User completed the wizard. Show a celebration/completion UI with next steps."
+            elif action == "select_policy":
+                policy = ctx.get("policyName") or ctx.get("policy") or json.dumps(ctx)
+                query = f"User selected policy: {policy}. Show detailed coverage information, premium breakdown, deductible options, and a button to proceed with this policy."
+            elif action == "file_claim":
+                query = f"User wants to file a claim. Context: {json.dumps(ctx)}. Show a claim filing form with fields for incident date, description, and supporting documents."
+            elif action == "compare_plans":
+                query = f"User wants to compare plans. Context: {json.dumps(ctx)}. Show a side-by-side comparison table of the relevant plans."
             else:
-                query = f"The user interacted with the UI element '{action}' with data {ctx}. Respond appropriately by updating the UI."
+                ctx_str = json.dumps(ctx) if ctx else "no additional context"
+                query = (
+                    f"The user clicked '{action}' in the current UI. "
+                    f"Context data: {ctx_str}. "
+                    f"Update the UI to respond to this action appropriately."
+                )
         else:
             logger.info("No A2UI UI event part found. Using text input.")
             query = context.get_user_input()

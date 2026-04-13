@@ -115,6 +115,12 @@ def get_ui_prompt(examples: str) -> str:
     - To make UI more compact: Use fewer components, shorter text, smaller usageHints (h3 instead of h1)
     - To make UI mobile-first: Use Column layout instead of Row, stack elements vertically
 
+    BUTTON ACTION CONTEXT:
+    - When generating buttons with actions, ALWAYS use "literalString" for context values rather than "path" references. This ensures the action context is always resolved correctly.
+    - Example button action:
+      {{"action": {{"name": "select_policy", "context": [{{"key": "policyName", "value": {{"literalString": "Premium Auto Insurance"}}}}, {{"key": "policyId", "value": {{"literalString": "auto-premium-001"}}}}]}}}}
+    - NEVER use "path" in action context values. Always use "literalString", "literalNumber", or "literalBoolean".
+
     CONTENT GENERATION:
     - Generate realistic, relevant content based on the user's request
     - If the user mentions a specific domain (insurance, e-commerce, etc.), tailor content accordingly

@@ -32,9 +32,7 @@ const configs: Record<string, AppConfig> = { tech: techConfig };
 interface ChatEntry {
   id: string;
   role: 'user' | 'assistant';
-  text: string | null;
-  turnIndex: number;
-  isAction?: boolean;
+  text: string;
 }
 
 @customElement("a2ui-shell")
@@ -44,8 +42,9 @@ export class A2UIShell extends SignalWatcher(LitElement) {
 
   @state() accessor #requesting = false;
   @state() accessor #chatHistory: ChatEntry[] = [];
-  @state() accessor config: AppConfig = configs.tech;
+  @state() accessor #canvasVisible = false;
   @state() accessor #loadingTextIndex = 0;
+  @state() accessor config: AppConfig = configs.tech;
 
   #turnCounter = 0;
   #loadingInterval: number | undefined;
@@ -114,7 +113,20 @@ export class A2UIShell extends SignalWatcher(LitElement) {
     .header-link:hover { background: #f3f4f6; }
     .header-link .material-symbols-outlined { font-size: 18px; }
 
-    /* ── Messages area ── */
+    /* ── Main content (split layout) ── */
+    #main-content {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+    }
+
+    /* ── Chat panel (left) ── */
+    #chat-panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
     #chat-messages {
       flex: 1;
       overflow-y: auto;
@@ -177,39 +189,6 @@ export class A2UIShell extends SignalWatcher(LitElement) {
       color: #1f2937;
       border: 1px solid #e5e7eb;
       border-bottom-left-radius: 4px;
-    }
-
-    /* ── Surface canvas (computer-in-chat) ── */
-    .surface-canvas {
-      margin-top: 12px;
-      border: 1px solid #d1d5db;
-      border-radius: 12px;
-      background: #ffffff;
-      overflow: hidden;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-    }
-    .surface-canvas-bar {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      padding: 8px 14px;
-      background: #f3f4f6;
-      border-bottom: 1px solid #e5e7eb;
-    }
-    .surface-canvas-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: #d1d5db;
-    }
-    .surface-canvas-dot.red { background: #ef4444; }
-    .surface-canvas-dot.yellow { background: #f59e0b; }
-    .surface-canvas-dot.green { background: #10b981; }
-    .surface-canvas-body {
-      padding: 20px;
-    }
-    .surface-canvas-body a2ui-surface {
-      max-width: 100%;
     }
 
     /* ── Typing indicator ── */
@@ -287,6 +266,50 @@ export class A2UIShell extends SignalWatcher(LitElement) {
     }
     .send-btn:hover { opacity: 0.85; }
     .send-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* ── Canvas panel (right) ── */
+    #canvas-panel {
+      width: 55%;
+      max-width: 55%;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      border-left: 1px solid #e5e7eb;
+      background: #f9fafb;
+    }
+    .canvas-titlebar {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 10px 16px;
+      background: #f3f4f6;
+      border-bottom: 1px solid #e5e7eb;
+      flex-shrink: 0;
+    }
+    .canvas-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #d1d5db;
+    }
+    .canvas-dot.red { background: #ef4444; }
+    .canvas-dot.yellow { background: #f59e0b; }
+    .canvas-dot.green { background: #10b981; }
+    .canvas-title {
+      margin-left: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      color: #6b7280;
+    }
+    .canvas-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px;
+      background: white;
+    }
+    .canvas-body a2ui-surface {
+      max-width: 100%;
+    }
   `;
 
   connectedCallback() {
@@ -300,7 +323,15 @@ export class A2UIShell extends SignalWatcher(LitElement) {
   }
 
   render() {
+    // Get the active surface (single persistent surface, no rewriting)
     const surfaces = this.#processor.getSurfaces();
+    let activeSurfaceId: string | null = null;
+    let activeSurface: any = null;
+    for (const [id, surface] of surfaces) {
+      activeSurfaceId = id;
+      activeSurface = surface;
+      break;
+    }
 
     return html`
       <div id="chat-header">
@@ -314,86 +345,79 @@ export class A2UIShell extends SignalWatcher(LitElement) {
         </a>
       </div>
 
-      <div id="chat-messages">
-        ${this.#chatHistory.length === 0 && !this.#requesting ? html`
-          <div class="empty-state">
-            <div class="agent-icon">
-              <span class="material-symbols-outlined">shield</span>
-            </div>
-            <div>${this.config.placeholder}</div>
-          </div>
-        ` : nothing}
-
-        ${repeat(this.#chatHistory, (e) => e.id, (entry) => {
-          // Don't show action entries as user messages
-          if (entry.role === 'user' && entry.isAction) {
-            // Render nothing for button-click actions
-            return nothing;
-          }
-
-          if (entry.role === 'user') {
-            return html`
-              <div class="message user-message">
-                <div class="bubble">${entry.text}</div>
-              </div>`;
-          }
-
-          // Assistant message
-          const turnPrefix = `turn-${entry.turnIndex}-`;
-          const turnSurfaces = [...surfaces].filter(([id]) => id.startsWith(turnPrefix));
-
-          return html`
-            <div class="message assistant-message">
-              ${entry.text ? html`<div class="bubble">${entry.text}</div>` : nothing}
-              ${turnSurfaces.length > 0 ? html`
-                <div class="surface-canvas">
-                  <div class="surface-canvas-bar">
-                    <div class="surface-canvas-dot red"></div>
-                    <div class="surface-canvas-dot yellow"></div>
-                    <div class="surface-canvas-dot green"></div>
-                  </div>
-                  <div class="surface-canvas-body">
-                    ${repeat(turnSurfaces, ([id]) => id, ([id, surface]) => html`
-                      <a2ui-surface
-                        .surfaceId=${id}
-                        .surface=${surface}
-                        .processor=${this.#processor}
-                        @a2uiaction=${(evt: v0_8.Events.StateEvent<"a2ui.action">) => this.#handleAction(evt, id)}
-                      ></a2ui-surface>
-                    `)}
-                  </div>
+      <div id="main-content">
+        <div id="chat-panel">
+          <div id="chat-messages">
+            ${this.#chatHistory.length === 0 && !this.#requesting ? html`
+              <div class="empty-state">
+                <div class="agent-icon">
+                  <span class="material-symbols-outlined">shield</span>
                 </div>
-              ` : nothing}
-            </div>`;
-        })}
+                <div>${this.config.placeholder}</div>
+              </div>
+            ` : nothing}
 
-        ${this.#requesting ? html`
-          <div class="message assistant-message">
-            <div class="typing-indicator">
-              <div class="spinner"></div>
-              <span>${this.#getLoadingText()}</span>
+            ${repeat(this.#chatHistory, (e) => e.id, (entry) => {
+              if (entry.role === 'user') {
+                return html`
+                  <div class="message user-message">
+                    <div class="bubble">${entry.text}</div>
+                  </div>`;
+              }
+              return html`
+                <div class="message assistant-message">
+                  <div class="bubble">${entry.text}</div>
+                </div>`;
+            })}
+
+            ${this.#requesting ? html`
+              <div class="message assistant-message">
+                <div class="typing-indicator">
+                  <div class="spinner"></div>
+                  <span>${this.#getLoadingText()}</span>
+                </div>
+              </div>
+            ` : nothing}
+          </div>
+
+          <div id="chat-input-bar">
+            <div class="input-wrapper">
+              <textarea
+                id="body"
+                placeholder=${this.config.placeholder}
+                ?disabled=${this.#requesting}
+                @keydown=${this.#handleKeyDown}
+                rows="1"
+              ></textarea>
+              <button
+                class="send-btn"
+                ?disabled=${this.#requesting}
+                @click=${this.#handleSend}
+              >
+                <span class="material-symbols-outlined">send</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        ${this.#canvasVisible && activeSurface ? html`
+          <div id="canvas-panel">
+            <div class="canvas-titlebar">
+              <div class="canvas-dot red"></div>
+              <div class="canvas-dot yellow"></div>
+              <div class="canvas-dot green"></div>
+              <span class="canvas-title">Interactive View</span>
+            </div>
+            <div class="canvas-body">
+              <a2ui-surface
+                .surfaceId=${activeSurfaceId}
+                .surface=${activeSurface}
+                .processor=${this.#processor}
+                @a2uiaction=${(evt: v0_8.Events.StateEvent<"a2ui.action">) => this.#handleAction(evt, activeSurfaceId!)}
+              ></a2ui-surface>
             </div>
           </div>
         ` : nothing}
-      </div>
-
-      <div id="chat-input-bar">
-        <div class="input-wrapper">
-          <textarea
-            id="body"
-            placeholder=${this.config.placeholder}
-            ?disabled=${this.#requesting}
-            @keydown=${this.#handleKeyDown}
-            rows="1"
-          ></textarea>
-          <button
-            class="send-btn"
-            ?disabled=${this.#requesting}
-            @click=${this.#handleSend}
-          >
-            <span class="material-symbols-outlined">send</span>
-          </button>
-        </div>
       </div>
     `;
   }
@@ -420,7 +444,7 @@ export class A2UIShell extends SignalWatcher(LitElement) {
     textarea.value = '';
 
     const message = text as unknown as v0_8.Types.A2UIClientEventMessage;
-    this.#sendAndProcessMessage(message, text, false);
+    this.#sendAndProcessMessage(message, text);
   }
 
   async #handleAction(evt: v0_8.Events.StateEvent<"a2ui.action">, surfaceId: string) {
@@ -456,56 +480,47 @@ export class A2UIShell extends SignalWatcher(LitElement) {
       },
     };
 
-    await this.#sendAndProcessMessage(message, null, true);
+    // Actions don't show as user messages in chat
+    await this.#sendAndProcessMessage(message, null);
   }
 
-  async #sendAndProcessMessage(request: v0_8.Types.A2UIClientEventMessage | string, userText: string | null, isAction: boolean) {
+  async #sendAndProcessMessage(request: v0_8.Types.A2UIClientEventMessage | string, userText: string | null) {
     try {
       this.#requesting = true;
       this.#startLoadingAnimation();
-
       this.#turnCounter++;
-      const turnIndex = this.#turnCounter;
 
-      // Add user message to chat (actions are hidden but tracked)
-      this.#chatHistory = [...this.#chatHistory, {
-        id: `user-${turnIndex}`,
-        role: 'user',
-        text: userText,
-        turnIndex,
-        isAction,
-      }];
-      this.#scrollToBottom();
+      // Add user message to chat (only for typed messages, not button actions)
+      if (userText) {
+        this.#chatHistory = [...this.#chatHistory, {
+          id: `user-${this.#turnCounter}`,
+          role: 'user',
+          text: userText,
+        }];
+        this.#scrollToBottom();
+      }
 
       const response = await this.#a2uiClient.send(request);
 
-      // Rewrite surfaceIds to be unique per turn
-      for (const msg of response.messages) {
-        if (msg.beginRendering) {
-          msg.beginRendering.styles = { ...DesignSystemConfig };
-          msg.beginRendering.surfaceId = `turn-${turnIndex}-${msg.beginRendering.surfaceId}`;
+      // Process A2UI messages — no surfaceId rewriting, use original IDs
+      if (response.messages.length > 0) {
+        for (const msg of response.messages) {
+          if (msg.beginRendering) {
+            msg.beginRendering.styles = { ...DesignSystemConfig };
+          }
         }
-        if (msg.surfaceUpdate) {
-          msg.surfaceUpdate.surfaceId = `turn-${turnIndex}-${msg.surfaceUpdate.surfaceId}`;
-        }
-        if (msg.dataModelUpdate) {
-          msg.dataModelUpdate.surfaceId = `turn-${turnIndex}-${msg.dataModelUpdate.surfaceId}`;
-        }
-        if (msg.deleteSurface) {
-          msg.deleteSurface.surfaceId = `turn-${turnIndex}-${msg.deleteSurface.surfaceId}`;
-        }
+        this.#processor.processMessages(response.messages);
+        this.#canvasVisible = true;
       }
 
-      // Process A2UI messages (accumulate, don't clear)
-      this.#processor.processMessages(response.messages);
-
-      // Add assistant message to chat
-      this.#chatHistory = [...this.#chatHistory, {
-        id: `assistant-${turnIndex}`,
-        role: 'assistant',
-        text: response.text,
-        turnIndex,
-      }];
+      // Add assistant text to chat (if any)
+      if (response.text) {
+        this.#chatHistory = [...this.#chatHistory, {
+          id: `assistant-${this.#turnCounter}`,
+          role: 'assistant',
+          text: response.text,
+        }];
+      }
 
       this.#requesting = false;
       this.#stopLoadingAnimation();
@@ -517,7 +532,6 @@ export class A2UIShell extends SignalWatcher(LitElement) {
         id: `error-${this.#turnCounter}`,
         role: 'assistant',
         text: 'Sorry, something went wrong. Please try again.',
-        turnIndex: this.#turnCounter,
       }];
     }
   }

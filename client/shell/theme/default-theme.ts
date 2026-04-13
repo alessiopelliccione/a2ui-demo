@@ -25,16 +25,10 @@ export const DesignSystemConfig = {
 export const theme: v0_8.Types.Theme = {
   additionalStyles: {
     Button: {
-      padding: "14px 28px",
       fontSize: "15px",
       fontWeight: "600",
-      borderRadius: "12px",
       cursor: "pointer",
       transition: "all 0.2s ease",
-      display: "inline-flex",
-      alignItems: "center",
-      justifyContent: "center",
-      gap: "8px",
     },
     Text: {
       h1: { fontSize: "48px", lineHeight: "1.1", marginBottom: "16px" },

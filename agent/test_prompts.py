@@ -1,57 +1,47 @@
-# Test prompts to exercise all A2UI atomic components
-# Usage: copy-paste any prompt into the chat to verify rendering
+# Test prompts for the Insurance Assistant agent
+# Usage: copy-paste any prompt into the chat to verify rendering and interactions
+# Prompts exercise both text-only responses and A2UI interactive components
 
 TEST_PROMPTS = [
-    # ── Buttons ──
-    "Create a simple page with two buttons: 'Confirm' and 'Cancel'.",
+    # ── Text-only (no UI) ──
+    "Ciao, cosa sai fare?",
+    "Quali tipi di assicurazione offrite?",
 
-    # ── Typography ──
-    "Show a text hierarchy: a main title, subtitle, body paragraph, and a caption at the bottom.",
+    # ── Policy browsing ──
+    "Voglio vedere le polizze auto disponibili.",
+    "Mostrami un confronto tra le polizze casa: Base, Plus e Premium.",
+    "Quali sono le opzioni di assicurazione vita?",
 
-    # ── Cards + KPI dashboard ──
-    "Build a financial KPI dashboard with 3 cards showing Total Revenue, Active Users, and Conversion Rate.",
+    # ── KPI Dashboard ──
+    "Mostrami una dashboard con lo stato delle mie polizze attive, i premi pagati e le scadenze.",
+    "Crea un riepilogo del mio portfolio assicurativo con 4 KPI.",
 
-    # ── TextField + Form ──
-    "Create a contact form with fields for Name, Email, Phone Number, and a long text area for Message.",
+    # ── Policy selection (button interaction) ──
+    "Voglio cambiare la mia assicurazione auto. Che polizze ci sono?",
+    "Confronta i piani salute: Bronze, Silver e Gold con prezzi e coperture.",
 
-    # ── CheckBox ──
-    "Show a terms-and-conditions checkbox followed by a Submit button.",
+    # ── Claims ──
+    "Voglio aprire un sinistro per la mia auto.",
+    "Mostrami un wizard per la denuncia di un sinistro: data, tipo di incidente e descrizione.",
 
-    # ── DateTimeInput ──
-    "Create a booking form with a date/time picker for appointment scheduling.",
+    # ── Forms ──
+    "Voglio richiedere un preventivo per un'assicurazione casa. Fammi un form.",
+    "Crea un modulo per aggiornare i miei dati di contatto: nome, email, telefono, indirizzo.",
 
-    # ── Slider ──
-    "Build a loan calculator with a slider for the amount (0 to 100000) and another for the duration in months (12 to 360).",
+    # ── Complex interactions ──
+    "Mostrami le mie polizze attive in una lista con stato, scadenza e un bottone per i dettagli.",
+    "Crea una tabella comparativa di 3 piani assicurativi auto con premio, franchigia e massimale.",
 
-    # ── MultipleChoice ──
-    "Create a survey with a multiple-choice question: 'Which features do you use most?' with options: Dashboard, Reports, Notifications, Settings.",
-
-    # ── Icons ──
-    "Show a row of feature highlights, each with an icon and a short label: Security (shield), Speed (bolt), Support (headset_mic).",
-
-    # ── Images ──
-    "Create a team page with 3 avatar images and names underneath each one.",
+    # ── Cards + details ──
+    "Mostrami i dettagli della polizza Premium Auto con coperture, franchigia e premio mensile.",
+    "Crea una card con il riepilogo di un sinistro: numero pratica, stato, data e importo.",
 
     # ── Tabs ──
-    "Build a product page with 3 tabs: Overview, Specifications, and Reviews.",
+    "Crea una pagina con 3 tab: Le Mie Polizze, Sinistri Aperti, Pagamenti.",
 
-    # ── Lists ──
-    "Show a vertical list of 5 recent transactions, each with date, description, and amount.",
-
-    # ── Modal ──
-    "Create a page with a 'Delete Account' button that opens a confirmation modal.",
-
-    # ── Divider ──
-    "Build a pricing card with plan name, price, a divider, and a bullet list of features.",
-
-    # ── Video + Audio ──
-    "Create a media gallery with a video player and an audio player below it.",
-
-    # ── Complex: multiple components ──
-    "Build an insurance policy comparison with two cards side by side. Each card has a plan name, price, divider, feature list, and a selection button.",
-
-    # ── Complex: wizard ──
-    "Create a 3-step claim wizard using tabs: Step 1 asks for incident date (date picker), Step 2 asks for incident type (multiple choice), Step 3 shows a summary and a Submit button.",
+    # ── Edge cases ──
+    "What is the difference between comprehensive and third-party insurance?",
+    "Dimmi la conferenza tech da non perdere quest'anno.",
 ]
 
 if __name__ == "__main__":
