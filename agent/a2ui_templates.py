@@ -342,6 +342,7 @@ def _render_form(data):
             children.append(b.date_input(label, data_path))
         elif ftype == "select":
             options = [(o, o.lower().replace(" ", "_")) for o in field.get("options", [])]
+            children.append(b.text(label, "h5"))
             children.append(b.multiple_choice(label, options, data_path))
         else:
             children.append(b.text_field(label, data_path, field.get("placeholder", "")))
