@@ -129,7 +129,19 @@ class UIBuilderAgentExecutor(AgentExecutor):
                 json_string_cleaned = content.strip().lstrip("```json").rstrip("```").strip()
                 json_data = json.loads(json_string_cleaned)
 
-                if isinstance(json_data, list):
+                if isinstance(json_data, dict) and ("message" in json_data or "ui" in json_data):
+                    # Envelope format: {"message": "...", "ui": [...]}
+                    message_text = json_data.get("message", "")
+                    ui_messages = json_data.get("ui", [])
+                    if message_text:
+                        logger.info(f"Envelope: adding TextPart with message ({len(message_text)} chars)")
+                        final_parts.append(Part(root=TextPart(text=message_text)))
+                    if isinstance(ui_messages, list):
+                        logger.info(f"Envelope: adding {len(ui_messages)} A2UI DataParts.")
+                        for msg in ui_messages:
+                            final_parts.append(create_a2ui_part(msg))
+                elif isinstance(json_data, list):
+                    # Backward compatible: raw A2UI array
                     logger.info(f"Found {len(json_data)} messages. Creating individual DataParts.")
                     for message in json_data:
                         final_parts.append(create_a2ui_part(message))

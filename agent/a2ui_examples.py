@@ -4,7 +4,9 @@
 UI_BUILDER_EXAMPLES = """
 ---BEGIN FINANCE_PORTFOLIO_DASHBOARD---
 Description: Use this example when the user asks for a financial dashboard, portfolio overview, or investment performance.
-[
+{{
+  "message": "Here is your portfolio performance dashboard with three key metrics: Total Balance, Today's Return, and Annualized Yield.",
+  "ui": [
   {{ "beginRendering": {{ "surfaceId": "default", "root": "dashboard-root" }} }},
   {{ "surfaceUpdate": {{
     "surfaceId": "default",
@@ -58,12 +60,15 @@ Description: Use this example when the user asks for a financial dashboard, port
       ] }}
     ]
   }} }}
-]
+  ]
+}}
 ---END FINANCE_PORTFOLIO_DASHBOARD---
 
 ---BEGIN INSURANCE_POLICY_COMPARISON---
 Description: Use this example when the user asks for a comparison of insurance plans, policies, or coverage options.
-[
+{{
+  "message": "Here is a side-by-side comparison of two auto insurance plans: Basic Liability and Premium Comprehensive.",
+  "ui": [
   {{ "beginRendering": {{ "surfaceId": "default", "root": "comparison-root" }} }},
   {{ "surfaceUpdate": {{
     "surfaceId": "default",
@@ -79,14 +84,14 @@ Description: Use this example when the user asks for a comparison of insurance p
       {{ "id": "policy-a-pros", "component": {{ "Text": {{ "text": {{ "path": "/policies/a/coverage" }} }} }} }},
       {{ "id": "policy-a-button", "component": {{ "Button": {{ "child": "policy-a-btn-text", "action": {{ "name": "select_policy", "context": [{{ "key": "policy", "value": {{ "path": "/policies/a/name" }} }}] }} }} }} }},
       {{ "id": "policy-a-btn-text", "component": {{ "Text": {{ "text": {{ "literalString": "Select Basic" }} }} }} }},
-      
+
       {{ "id": "policy-b-card", "weight": 1, "component": {{ "Card": {{ "child": "policy-b-content" }} }} }},
       {{ "id": "policy-b-content", "component": {{ "Column": {{ "children": {{ "explicitList": ["policy-b-name", "policy-b-price", "policy-b-divider", "policy-b-pros", "policy-b-button"] }} }} }} }},
       {{ "id": "policy-b-name", "component": {{ "Text": {{ "usageHint": "h3", "text": {{ "path": "/policies/b/name" }} }} }} }},
       {{ "id": "policy-b-price", "component": {{ "Text": {{ "usageHint": "h1", "text": {{ "path": "/policies/b/price" }} }} }} }},
       {{ "id": "policy-b-divider", "component": {{ "Divider": {{}} }} }},
       {{ "id": "policy-b-pros", "component": {{ "Text": {{ "text": {{ "path": "/policies/b/coverage" }} }} }} }},
-      {{ "id": "policy-b-button", "component": {{ "Button": {{ "child": "policy-b-btn-text", "primary": true, "action": {{ "name": "select_policy", "context": [{{ "key": "policy", "value": {{ "path": "/policies/b/name" }} }}] }} }} }} }},
+      {{ "id": "policy-b-button", "component": {{ "Button": {{ "child": "policy-b-btn-text", "action": {{ "name": "select_policy", "context": [{{ "key": "policy", "value": {{ "path": "/policies/b/name" }} }}] }} }} }} }},
       {{ "id": "policy-b-btn-text", "component": {{ "Text": {{ "text": {{ "literalString": "Select Premium" }} }} }} }}
     ]
   }} }},
@@ -111,12 +116,15 @@ Description: Use this example when the user asks for a comparison of insurance p
       ] }}
     ]
   }} }}
-]
+  ]
+}}
 ---END INSURANCE_POLICY_COMPARISON---
 
 ---BEGIN CLAIM_REPORTING_WIZARD---
 Description: Use this example when the user asks for a stepper, wizard, or process to report an incident or file an insurance claim.
-[
+{{
+  "message": "I've created a 3-step claim wizard. Start by entering the incident date, then select the type, and finally review and submit.",
+  "ui": [
   {{ "beginRendering": {{ "surfaceId": "default", "root": "stepper-root" }} }},
   {{ "surfaceUpdate": {{
     "surfaceId": "default",
@@ -140,7 +148,7 @@ Description: Use this example when the user asks for a stepper, wizard, or proce
       ], "maxAllowedSelections": 1 }} }} }},
       {{ "id": "step-3-content", "component": {{ "Column": {{ "children": {{ "explicitList": ["step-3-text", "step-3-button"] }} }} }} }},
       {{ "id": "step-3-text", "component": {{ "Text": {{ "text": {{ "path": "/steps/3/description" }} }} }} }},
-      {{ "id": "step-3-button", "component": {{ "Button": {{ "child": "complete-text", "primary": true, "action": {{ "name": "submit_claim", "context": [] }} }} }} }},
+      {{ "id": "step-3-button", "component": {{ "Button": {{ "child": "complete-text", "action": {{ "name": "submit_claim", "context": [] }} }} }} }},
       {{ "id": "complete-text", "component": {{ "Text": {{ "text": {{ "literalString": "Submit Claim" }} }} }} }}
     ]
   }} }},
@@ -166,6 +174,7 @@ Description: Use this example when the user asks for a stepper, wizard, or proce
       ] }}
     ]
   }} }}
-]
+  ]
+}}
 ---END CLAIM_REPORTING_WIZARD---
 """

@@ -20,6 +20,11 @@ import { v0_8 } from "@a2ui/lit";
 
 const A2UI_MIME_TYPE = "application/json+a2ui";
 
+export interface A2UIResponse {
+  text: string | null;
+  messages: v0_8.Types.ServerToClientMessage[];
+}
+
 export class A2UIClient {
   #serverUrl: string;
   #client: A2AClient | null = null;
@@ -54,7 +59,7 @@ export class A2UIClient {
 
   async send(
     message: v0_8.Types.A2UIClientEventMessage | string
-  ): Promise<v0_8.Types.ServerToClientMessage[]> {
+  ): Promise<A2UIResponse> {
     const client = await this.#getClient();
 
     let parts: Part[] = [];
@@ -98,15 +103,18 @@ export class A2UIClient {
 
     const result = (response as SendMessageSuccessResponse).result as Task;
     if (result.kind === "task" && result.status.message?.parts) {
+      let text: string | null = null;
       const messages: v0_8.Types.ServerToClientMessage[] = [];
       for (const part of result.status.message.parts) {
-        if (part.kind === 'data') {
+        if (part.kind === 'text') {
+          text = (part as any).text ?? null;
+        } else if (part.kind === 'data') {
           messages.push(part.data as v0_8.Types.ServerToClientMessage);
         }
       }
-      return messages;
+      return { text, messages };
     }
 
-    return [];
+    return { text: null, messages: [] };
   }
 }

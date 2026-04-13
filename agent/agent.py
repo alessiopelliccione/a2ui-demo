@@ -195,10 +195,23 @@ class UIBuilderAgent:
 
                     parsed_json_data = json.loads(json_string_cleaned)
 
-                    logger.info("Validating against A2UI_SCHEMA...")
-                    jsonschema.validate(
-                        instance=parsed_json_data, schema=self.a2ui_schema_object
-                    )
+                    # Support envelope format: {"message": "...", "ui": [...]}
+                    if isinstance(parsed_json_data, dict) and "ui" in parsed_json_data:
+                        ui_array = parsed_json_data["ui"]
+                        if not isinstance(ui_array, list):
+                            raise ValueError("Envelope 'ui' field must be an array.")
+                        logger.info("Validating envelope 'ui' array against A2UI_SCHEMA...")
+                        jsonschema.validate(
+                            instance=ui_array, schema=self.a2ui_schema_object
+                        )
+                    elif isinstance(parsed_json_data, list):
+                        # Backward compatible: raw A2UI array
+                        logger.info("Validating raw A2UI array against A2UI_SCHEMA...")
+                        jsonschema.validate(
+                            instance=parsed_json_data, schema=self.a2ui_schema_object
+                        )
+                    else:
+                        raise ValueError("Response must be an envelope object or A2UI array.")
 
                     logger.info(f"UI JSON validated successfully (Attempt {attempt})")
                     is_valid = True

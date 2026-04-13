@@ -88,12 +88,15 @@ def get_ui_prompt(examples: str) -> str:
     - To open an external link (social media, websites), use a Button with action name "open_url" and provide the URL in the context with key "url". This action is handled locally by the browser and will not involve the agent.
 
     IMPORTANT RULES:
-    1. Your entire response MUST be EXCLUSIVELY a single, raw JSON array containing the A2UI messages.
-    2. Do NOT include ANY conversational text, markdown formatting (like ```json), or delimiters.
-    3. Start your response immediately with `[` and end with `]`.
-    4. The JSON array MUST validate against the A2UI JSON SCHEMA provided below.
-    5. CRITICAL: Every JSON response MUST start with a `beginRendering` message to initialize the surface. Even for updates or button clicks, you must redefine the surface root.
-    6. CRITICAL: Do NOT apply any "styles" object in beginRendering. Colors and fonts are managed securely by the Client's strict Design System.
+    1. Your entire response MUST be EXCLUSIVELY a single JSON object with two fields:
+       - "message" (string, ALWAYS required): A brief conversational explanation of what the UI shows or an answer to the user's question.
+       - "ui" (array, optional): The A2UI messages array. Omit this field entirely for text-only answers (e.g. "what can you do?").
+    2. Do NOT include ANY markdown formatting (like ```json), or delimiters. Start with {{ and end with }}.
+    3. The "ui" array, when present, MUST validate against the A2UI JSON SCHEMA provided below.
+    4. CRITICAL: When "ui" is present, it MUST start with a `beginRendering` message to initialize the surface. Even for updates or button clicks, you must redefine the surface root.
+    5. CRITICAL: Do NOT apply any "styles" object in beginRendering. Colors and fonts are managed securely by the Client's strict Design System.
+    6. Example response format:
+       {{ "message": "Here is your portfolio dashboard with three KPIs.", "ui": [ {{ "beginRendering": ... }}, {{ "surfaceUpdate": ... }} ] }}
 
     UI TEMPLATE SELECTION RULES:
     - For headlines/hero sections: Use HEADLINE_EXAMPLE
