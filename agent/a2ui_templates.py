@@ -45,10 +45,12 @@ class A2UIBuilder:
         cid = self._id("b")
         action = {"name": action_name}
         if context:
-            action["context"] = [
-                {"key": k, "value": {"literalString": str(v)}}
-                for k, v in context.items()
-            ]
+            action["context"] = []
+            for k, v in context.items():
+                if isinstance(v, dict) and "path" in v:
+                    action["context"].append({"key": k, "value": v})
+                else:
+                    action["context"].append({"key": k, "value": {"literalString": str(v)}})
         self._components.append({
             "id": cid,
             "component": {"Button": {"child": label_id, "action": action}}
@@ -344,9 +346,12 @@ def _render_form(data):
         else:
             children.append(b.text_field(label, data_path, field.get("placeholder", "")))
 
+    # Submit button includes all form field values via path references
+    form_context = {k: {"path": f"/form/{k}"} for k in form_data}
     children.append(b.button(
         data.get("submitLabel", "Invia"),
         data.get("submitAction", "submit_form"),
+        form_context,
     ))
 
     root = b.column(children)

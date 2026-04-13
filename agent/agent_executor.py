@@ -82,32 +82,29 @@ class UIBuilderAgentExecutor(AgentExecutor):
             ctx = ui_event_part.get("context", {})
 
             # Generic handling of UI events
-            if action == "cta_click":
-                query = "The user clicked the main CTA button. Acknowledge this and show a success message or a next step UI (like a sign-up form)."
-            elif action == "submit_form":
-                form_data = json.dumps(ctx)
-                query = f"User submitted form with data: {form_data}. Confirm receipt and show a thank you message or a success state."
-            elif action == "select_product":
-                product = ctx.get("product", "Unknown")
-                query = f"User selected product: {product}. Display detailed specifications and an 'Order Now' button for this product."
-            elif action == "view_item":
-                item_id = ctx.get("itemId", "Unknown")
-                query = f"User wants to view item with ID: {item_id}. Generate a detailed item view."
-            elif action == "complete_wizard":
-                query = "User completed the wizard. Show a celebration/completion UI with next steps."
-            elif action == "select_policy":
+            if action == "select_policy":
                 policy = ctx.get("policyName") or ctx.get("policy") or json.dumps(ctx)
                 query = f"User selected policy: {policy}. Show detailed coverage information, premium breakdown, deductible options, and a button to proceed with this policy."
-            elif action == "file_claim":
-                query = f"User wants to file a claim. Context: {json.dumps(ctx)}. Show a claim filing form with fields for incident date, description, and supporting documents."
+            elif action == "activate_policy":
+                policy = ctx.get("policyName") or json.dumps(ctx)
+                query = f"User wants to activate policy: {policy}. Confirm the activation and show a success summary with next steps."
             elif action == "compare_plans":
                 query = f"User wants to compare plans. Context: {json.dumps(ctx)}. Show a side-by-side comparison table of the relevant plans."
+            elif action and action.startswith("submit"):
+                # All form submissions: submit_form, submit_claim, submit_quote, etc.
+                form_data = json.dumps(ctx, ensure_ascii=False)
+                query = (
+                    f"The user has COMPLETED and SUBMITTED a form. Action: '{action}'. "
+                    f"Submitted data: {form_data}. "
+                    f"Do NOT show the form again. Confirm receipt of the data, "
+                    f"summarize what was submitted, and show a success/confirmation view."
+                )
             else:
-                ctx_str = json.dumps(ctx) if ctx else "no additional context"
+                ctx_str = json.dumps(ctx, ensure_ascii=False) if ctx else "no additional context"
                 query = (
                     f"The user clicked '{action}' in the current UI. "
                     f"Context data: {ctx_str}. "
-                    f"Update the UI to respond to this action appropriately."
+                    f"Respond to this action appropriately."
                 )
         else:
             logger.info("No A2UI UI event part found. Using text input.")
