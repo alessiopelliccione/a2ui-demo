@@ -502,6 +502,11 @@ export class A2UIShell extends SignalWatcher(LitElement) {
 
       const response = await this.#a2uiClient.send(request);
 
+      console.log('[A2UI] Response:', { text: response.text?.slice(0, 100), messageCount: response.messages.length });
+      if (response.messages.length > 0) {
+        console.log('[A2UI] Messages to process:', JSON.stringify(response.messages).slice(0, 500));
+      }
+
       // Process A2UI messages — no surfaceId rewriting, use original IDs
       if (response.messages.length > 0) {
         for (const msg of response.messages) {
@@ -511,6 +516,13 @@ export class A2UIShell extends SignalWatcher(LitElement) {
         }
         this.#processor.processMessages(response.messages);
         this.#canvasVisible = true;
+
+        const surfaces = this.#processor.getSurfaces();
+        for (const [id, s] of surfaces) {
+          console.log('[A2UI] Surface after process:', { id, root: s.rootComponentId, hasTree: !!s.componentTree });
+        }
+      } else {
+        console.log('[A2UI] No A2UI messages in response — canvas NOT updated');
       }
 
       // Add assistant text to chat (if any)
