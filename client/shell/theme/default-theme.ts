@@ -59,7 +59,9 @@ export const theme: v0_8.Types.Theme = {
       "layout-pb-3": true,
       "layout-pl-6": true,
       "layout-pr-6": true,
-      "border-br-3": true
+      "border-br-3": true,
+      "color-bgc-p50": true,
+      "color-c-p100": true,
     },
     Card: { "border-br-5": true, "layout-p-8": true, "color-bgc-n0": true },
     CheckBox: { element: {}, label: {}, container: {} },
