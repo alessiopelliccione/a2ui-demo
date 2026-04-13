@@ -30,7 +30,7 @@ class A2UIBuilder:
 
     def icon(self, name):
         cid = self._id("i")
-        self._components.append({"id": cid, "component": {"Icon": {"icon": name}}})
+        self._components.append({"id": cid, "component": {"Icon": {"name": {"literalString": name}}}})
         return cid
 
     def divider(self):
@@ -75,7 +75,7 @@ class A2UIBuilder:
             "component": {
                 "DateTimeInput": {
                     "label": {"literalString": label},
-                    "text": {"path": data_path},
+                    "value": {"path": data_path},
                 }
             }
         })
