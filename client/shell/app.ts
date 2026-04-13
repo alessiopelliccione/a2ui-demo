@@ -490,6 +490,10 @@ export class A2UIShell extends SignalWatcher(LitElement) {
       this.#startLoadingAnimation();
       this.#turnCounter++;
 
+      // Hide canvas and clear surfaces immediately — gives feedback and forces fresh re-mount
+      this.#canvasVisible = false;
+      this.#processor.clearSurfaces();
+
       // Add user message to chat (only for typed messages, not button actions)
       if (userText) {
         this.#chatHistory = [...this.#chatHistory, {
@@ -502,12 +506,7 @@ export class A2UIShell extends SignalWatcher(LitElement) {
 
       const response = await this.#a2uiClient.send(request);
 
-      console.log('[A2UI] Response:', { text: response.text?.slice(0, 100), messageCount: response.messages.length });
-      if (response.messages.length > 0) {
-        console.log('[A2UI] Messages to process:', JSON.stringify(response.messages).slice(0, 500));
-      }
-
-      // Process A2UI messages — no surfaceId rewriting, use original IDs
+      // Process A2UI messages on a clean surface
       if (response.messages.length > 0) {
         for (const msg of response.messages) {
           if (msg.beginRendering) {
@@ -516,13 +515,6 @@ export class A2UIShell extends SignalWatcher(LitElement) {
         }
         this.#processor.processMessages(response.messages);
         this.#canvasVisible = true;
-
-        const surfaces = this.#processor.getSurfaces();
-        for (const [id, s] of surfaces) {
-          console.log('[A2UI] Surface after process:', { id, root: s.rootComponentId, hasTree: !!s.componentTree });
-        }
-      } else {
-        console.log('[A2UI] No A2UI messages in response — canvas NOT updated');
       }
 
       // Add assistant text to chat (if any)
@@ -541,6 +533,7 @@ export class A2UIShell extends SignalWatcher(LitElement) {
       console.error('A2UI request failed:', err);
       this.#requesting = false;
       this.#stopLoadingAnimation();
+      this.#canvasVisible = false;
       this.#chatHistory = [...this.#chatHistory, {
         id: `error-${this.#turnCounter}`,
         role: 'assistant',
