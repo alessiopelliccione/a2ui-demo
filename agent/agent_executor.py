@@ -81,30 +81,32 @@ class UIBuilderAgentExecutor(AgentExecutor):
             action = ui_event_part.get("name")
             ctx = ui_event_part.get("context", {})
 
-            # Generic handling of UI events
+            # All canvas actions MUST include a template to update the UI.
+            TEMPLATE_REMINDER = " You MUST include a template in your response to update the canvas."
+
             if action == "select_policy":
                 policy = ctx.get("policyName") or ctx.get("policy") or json.dumps(ctx)
-                query = f"User selected policy: {policy}. Show detailed coverage information, premium breakdown, deductible options, and a button to proceed with this policy."
+                query = f"User selected policy: {policy}. Show detailed coverage information, premium breakdown, deductible options, and a button to proceed with this policy." + TEMPLATE_REMINDER
             elif action == "activate_policy":
                 policy = ctx.get("policyName") or json.dumps(ctx)
-                query = f"User wants to activate policy: {policy}. Confirm the activation and show a success summary with next steps."
+                query = f"User wants to activate policy: {policy}. Confirm the activation and show a success summary with next steps using info_list or dashboard." + TEMPLATE_REMINDER
             elif action == "compare_plans":
-                query = f"User wants to compare plans. Context: {json.dumps(ctx)}. Show a side-by-side comparison table of the relevant plans."
+                query = f"User wants to compare plans. Context: {json.dumps(ctx)}. Show a side-by-side comparison table of the relevant plans." + TEMPLATE_REMINDER
             elif action and action.startswith("submit"):
                 # All form submissions: submit_form, submit_claim, submit_quote, etc.
                 form_data = json.dumps(ctx, ensure_ascii=False)
                 query = (
                     f"The user has COMPLETED and SUBMITTED a form. Action: '{action}'. "
                     f"Submitted data: {form_data}. "
-                    f"Do NOT show the form again. Confirm receipt of the data, "
-                    f"summarize what was submitted, and show a success/confirmation view."
+                    f"Do NOT show the form again. Show a CONFIRMATION using info_list template "
+                    f"that summarizes the submitted data with a success status." + TEMPLATE_REMINDER
                 )
             else:
                 ctx_str = json.dumps(ctx, ensure_ascii=False) if ctx else "no additional context"
                 query = (
                     f"The user clicked '{action}' in the current UI. "
                     f"Context data: {ctx_str}. "
-                    f"Respond to this action appropriately."
+                    f"Respond to this action appropriately." + TEMPLATE_REMINDER
                 )
         else:
             logger.info("No A2UI UI event part found. Using text input.")

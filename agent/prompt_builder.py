@@ -108,6 +108,8 @@ TEMPLATE SELECTION GUIDELINES:
 - User asks for portfolio/summary/KPIs → dashboard
 - User wants to fill out a form (quote, claim, contact) → form
 - User asks for a list of items with details (active policies, claims, transactions) → info_list
+- User submitted a form → info_list (summarize submitted data as confirmation) or dashboard (success KPIs)
+- User clicked a button/action in the UI → ALWAYS respond with a template to update the canvas
 - Simple questions, greetings, general knowledge → text only (no template)
 
 EXAMPLES:
@@ -127,6 +129,10 @@ User: "Mostrami il riepilogo delle mie polizze"
 Example 4 — Action response (user clicked a button):
 User action: select_policy with context policyName="Kasko Completa"
 {"message": "Ottima scelta! Ecco tutti i dettagli della Kasko Completa.", "template": "policy_detail", "data": {"name": "Kasko Completa", "type": "Assicurazione Auto", "price": 89, "period": "mese", "deductible": 500, "maxCoverage": "€500.000", "coverages": ["Responsabilità civile", "Furto e incendio", "Kasko completa", "Cristalli", "Assistenza stradale premium", "Auto sostitutiva"], "benefits": ["Zero franchigia su cristalli", "Soccorso stradale illimitato", "Perizia rapida entro 48h"], "actionLabel": "Attiva Kasko Completa", "actionName": "activate_policy", "id": "kasko"}}
+
+Example 5 — Form submission confirmation (ALWAYS update the canvas, NEVER re-show the form):
+User action: submit_claim with data {"data_incidente": "2024-03-15", "tipo": "Collisione", "descrizione": "Tamponamento al semaforo"}
+{"message": "Denuncia ricevuta! Ecco il riepilogo della tua pratica.", "template": "info_list", "data": {"title": "Denuncia Sinistro Inviata ✓", "items": [{"title": "Pratica #2024-1547", "subtitle": "Sinistro Auto — In lavorazione", "status": "Ricevuta", "details": [{"label": "Data incidente", "value": "15 marzo 2024"}, {"label": "Tipo", "value": "Collisione"}, {"label": "Descrizione", "value": "Tamponamento al semaforo"}, {"label": "Prossimo step", "value": "Perizia entro 48h"}], "actionLabel": "Vedi stato pratica", "actionName": "view_claim", "id": "claim-2024-1547"}]}}
 """
 
 
