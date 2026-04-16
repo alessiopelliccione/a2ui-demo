@@ -193,20 +193,20 @@ def render_template(name, data):
 
 def _render_policy_list(data):
     b = A2UIBuilder()
-    title = b.text(data.get("title", "Polizze Disponibili"), "h2")
+    title = b.text(data.get("title", "Available Policies"), "h2")
 
     card_ids = []
     for p in data.get("policies", []):
         children = [
             b.text(p["name"], "h3"),
-            b.text(f"\u20ac{p['price']}/mese", "h4"),
+            b.text(f"\u20ac{p['price']}/month", "h4"),
         ]
         for feat in p.get("features", []):
             children.append(
                 b.row([b.icon("check_circle"), b.text(feat)], "start")
             )
         children.append(b.divider())
-        children.append(b.button("Seleziona", "select_policy", {
+        children.append(b.button("Select", "select_policy", {
             "policyName": p["name"],
             "policyId": p.get("id", p["name"].lower().replace(" ", "-")),
         }))
@@ -226,23 +226,23 @@ def _render_policy_list(data):
 def _render_policy_detail(data):
     b = A2UIBuilder()
     children = [
-        b.text(data.get("name", "Dettaglio Polizza"), "h2"),
+        b.text(data.get("name", "Policy Details"), "h2"),
         b.text(data.get("type", ""), "caption"),
-        b.text(f"\u20ac{data.get('price', 0)}/{data.get('period', 'mese')}", "h3"),
+        b.text(f"\u20ac{data.get('price', 0)}/{data.get('period', 'month')}", "h3"),
         b.divider(),
     ]
 
     if data.get("deductible") is not None:
         children.append(
-            b.row([b.text("Franchigia:", "h5"), b.text(f"\u20ac{data['deductible']}")], "start")
+            b.row([b.text("Deductible:", "h5"), b.text(f"\u20ac{data['deductible']}")], "start")
         )
     if data.get("maxCoverage"):
         children.append(
-            b.row([b.text("Massimale:", "h5"), b.text(str(data["maxCoverage"]))], "start")
+            b.row([b.text("Max Coverage:", "h5"), b.text(str(data["maxCoverage"]))], "start")
         )
 
     children.append(b.divider())
-    children.append(b.text("Coperture incluse", "h4"))
+    children.append(b.text("Included Coverage", "h4"))
     for c in data.get("coverages", []):
         children.append(
             b.row([b.icon("check_circle"), b.text(c)], "start")
@@ -250,7 +250,7 @@ def _render_policy_detail(data):
 
     if data.get("benefits"):
         children.append(b.divider())
-        children.append(b.text("Vantaggi", "h4"))
+        children.append(b.text("Benefits", "h4"))
         for ben in data["benefits"]:
             children.append(
                 b.row([b.icon("star"), b.text(ben)], "start")
@@ -258,7 +258,7 @@ def _render_policy_detail(data):
 
     children.append(b.divider())
     children.append(b.button(
-        data.get("actionLabel", "Attiva questa polizza"),
+        data.get("actionLabel", "Activate this policy"),
         data.get("actionName", "activate_policy"),
         {"policyName": data.get("name", ""), "policyId": data.get("id", "")},
     ))
@@ -271,16 +271,16 @@ def _render_policy_detail(data):
 
 def _render_comparison(data):
     b = A2UIBuilder()
-    title = b.text(data.get("title", "Confronto Piani"), "h2")
+    title = b.text(data.get("title", "Plan Comparison"), "h2")
 
     card_ids = []
     for plan in data.get("plans", []):
         children = []
         if plan.get("highlighted"):
-            children.append(b.row([b.icon("star"), b.text("Consigliato", "caption")], "start"))
+            children.append(b.row([b.icon("star"), b.text("Recommended", "caption")], "start"))
         children.append(b.text(plan["name"], "h3"))
         children.append(b.text(
-            f"\u20ac{plan['price']}/{plan.get('period', 'mese')}", "h4"
+            f"\u20ac{plan['price']}/{plan.get('period', 'month')}", "h4"
         ))
         children.append(b.divider())
         for feat in plan.get("features", []):
@@ -288,7 +288,7 @@ def _render_comparison(data):
                 b.row([b.icon("check_circle"), b.text(feat)], "start")
             )
         children.append(b.divider())
-        children.append(b.button("Seleziona", "select_policy", {
+        children.append(b.button("Select", "select_policy", {
             "policyName": plan["name"],
             "policyId": plan.get("id", plan["name"].lower().replace(" ", "-")),
         }))
@@ -324,7 +324,7 @@ def _render_dashboard(data):
 
 def _render_form(data):
     b = A2UIBuilder()
-    children = [b.text(data.get("title", "Modulo"), "h2")]
+    children = [b.text(data.get("title", "Form"), "h2")]
 
     if data.get("description"):
         children.append(b.text(data["description"]))
@@ -333,7 +333,7 @@ def _render_form(data):
     form_data = {}
     for i, field in enumerate(data.get("fields", [])):
         ftype = field.get("type", "text")
-        label = field.get("label", f"Campo {i+1}")
+        label = field.get("label", f"Field {i+1}")
         path_key = label.lower().replace(" ", "_")
         data_path = f"/form/{path_key}"
         form_data[path_key] = ""
@@ -350,7 +350,7 @@ def _render_form(data):
     # Submit button includes all form field values via path references
     form_context = {k: {"path": f"/form/{k}"} for k in form_data}
     children.append(b.button(
-        data.get("submitLabel", "Invia"),
+        data.get("submitLabel", "Submit"),
         data.get("submitAction", "submit_form"),
         form_context,
     ))
@@ -369,7 +369,7 @@ def _render_form(data):
 
 def _render_info_list(data):
     b = A2UIBuilder()
-    title = b.text(data.get("title", "Elenco"), "h2")
+    title = b.text(data.get("title", "List"), "h2")
 
     card_ids = []
     for item in data.get("items", []):

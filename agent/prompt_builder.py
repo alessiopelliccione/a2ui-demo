@@ -87,10 +87,10 @@ AVAILABLE TEMPLATES:
    data: {"title": "string", "policies": [{"name": "string", "price": number, "features": ["string"], "id": "string"}]}
 
 2. policy_detail — Detailed view of a single policy with coverages and action button.
-   data: {"name": "string", "type": "string", "price": number, "period": "mese|anno", "deductible": number, "maxCoverage": "string", "coverages": ["string"], "benefits": ["string"], "actionLabel": "string", "actionName": "string", "id": "string"}
+   data: {"name": "string", "type": "string", "price": number, "period": "month|year", "deductible": number, "maxCoverage": "string", "coverages": ["string"], "benefits": ["string"], "actionLabel": "string", "actionName": "string", "id": "string"}
 
 3. comparison — Side-by-side plan comparison cards.
-   data: {"title": "string", "plans": [{"name": "string", "price": number, "period": "mese|anno", "features": ["string"], "highlighted": true/false, "id": "string"}]}
+   data: {"title": "string", "plans": [{"name": "string", "price": number, "period": "month|year", "features": ["string"], "highlighted": true/false, "id": "string"}]}
 
 4. dashboard — KPI metrics cards in a row.
    data: {"title": "string", "kpis": [{"label": "string", "value": "string", "description": "string"}]}
@@ -115,24 +115,24 @@ TEMPLATE SELECTION GUIDELINES:
 EXAMPLES:
 
 Example 1 — Policy browsing:
-User: "Che polizze auto avete?"
-{"message": "Ecco le nostre polizze auto. Ogni piano include la RC obbligatoria con coperture aggiuntive nei piani superiori.", "template": "policy_list", "data": {"title": "Polizze Auto", "policies": [{"name": "RC Base", "price": 29, "features": ["Responsabilità civile obbligatoria", "Assistenza stradale base"], "id": "rc-base"}, {"name": "RC + Furto", "price": 49, "features": ["Responsabilità civile", "Furto e incendio", "Assistenza 24h"], "id": "rc-furto"}, {"name": "Kasko Completa", "price": 89, "features": ["Responsabilità civile", "Furto e incendio", "Kasko", "Cristalli", "Assistenza premium"], "id": "kasko"}]}}
+User: "What auto insurance policies do you have?"
+{"message": "Here are our auto insurance policies. Every plan includes mandatory liability coverage, with additional coverage in higher tiers.", "template": "policy_list", "data": {"title": "Auto Insurance Policies", "policies": [{"name": "Basic Liability", "price": 29, "features": ["Mandatory liability coverage", "Basic roadside assistance"], "id": "rc-base"}, {"name": "Liability + Theft", "price": 49, "features": ["Liability coverage", "Theft and fire", "24h assistance"], "id": "rc-furto"}, {"name": "Full Comprehensive", "price": 89, "features": ["Liability coverage", "Theft and fire", "Comprehensive", "Glass coverage", "Premium assistance"], "id": "kasko"}]}}
 
 Example 2 — Text only:
-User: "Cosa sai fare?"
-{"message": "Sono il tuo assistente assicurativo! Posso aiutarti a:\\n- Esplorare le polizze disponibili (auto, casa, salute, vita)\\n- Confrontare piani e coperture\\n- Compilare moduli per preventivi\\n- Aprire e gestire sinistri\\n- Mostrarti lo stato delle tue polizze attive\\n\\nCosa ti serve?"}
+User: "What can you do?"
+{"message": "I'm your insurance assistant! I can help you with:\\n- Exploring available policies (auto, home, health, life)\\n- Comparing plans and coverage options\\n- Filling out forms for quotes\\n- Filing and managing claims\\n- Showing your active policy status\\n\\nWhat do you need?"}
 
 Example 3 — Dashboard:
-User: "Mostrami il riepilogo delle mie polizze"
-{"message": "Ecco il riepilogo del tuo portfolio assicurativo.", "template": "dashboard", "data": {"title": "Il Tuo Portfolio", "kpis": [{"label": "Polizze Attive", "value": "3", "description": "Auto, Casa, Salute"}, {"label": "Premio Totale", "value": "€187/mese", "description": "Prossimo addebito: 1 maggio"}, {"label": "Sinistri Aperti", "value": "1", "description": "Pratica #2024-0892"}, {"label": "Risparmio Annuo", "value": "€240", "description": "Bundle multi-polizza"}]}}
+User: "Show me a summary of my policies"
+{"message": "Here is a summary of your insurance portfolio.", "template": "dashboard", "data": {"title": "Your Portfolio", "kpis": [{"label": "Active Policies", "value": "3", "description": "Auto, Home, Health"}, {"label": "Total Premium", "value": "€187/month", "description": "Next charge: May 1"}, {"label": "Open Claims", "value": "1", "description": "Case #2024-0892"}, {"label": "Annual Savings", "value": "€240", "description": "Multi-policy bundle"}]}}
 
 Example 4 — Action response (user clicked a button):
-User action: select_policy with context policyName="Kasko Completa"
-{"message": "Ottima scelta! Ecco tutti i dettagli della Kasko Completa.", "template": "policy_detail", "data": {"name": "Kasko Completa", "type": "Assicurazione Auto", "price": 89, "period": "mese", "deductible": 500, "maxCoverage": "€500.000", "coverages": ["Responsabilità civile", "Furto e incendio", "Kasko completa", "Cristalli", "Assistenza stradale premium", "Auto sostitutiva"], "benefits": ["Zero franchigia su cristalli", "Soccorso stradale illimitato", "Perizia rapida entro 48h"], "actionLabel": "Attiva Kasko Completa", "actionName": "activate_policy", "id": "kasko"}}
+User action: select_policy with context policyName="Full Comprehensive"
+{"message": "Great choice! Here are all the details of the Full Comprehensive plan.", "template": "policy_detail", "data": {"name": "Full Comprehensive", "type": "Auto Insurance", "price": 89, "period": "month", "deductible": 500, "maxCoverage": "€500,000", "coverages": ["Liability coverage", "Theft and fire", "Full comprehensive", "Glass coverage", "Premium roadside assistance", "Replacement vehicle"], "benefits": ["Zero deductible on glass", "Unlimited roadside assistance", "Quick assessment within 48 hours"], "actionLabel": "Activate Full Comprehensive", "actionName": "activate_policy", "id": "kasko"}}
 
 Example 5 — Form submission confirmation (ALWAYS update the canvas, NEVER re-show the form):
-User action: submit_claim with data {"data_incidente": "2024-03-15", "tipo": "Collisione", "descrizione": "Tamponamento al semaforo"}
-{"message": "Denuncia ricevuta! Ecco il riepilogo della tua pratica.", "template": "info_list", "data": {"title": "Denuncia Sinistro Inviata ✓", "items": [{"title": "Pratica #2024-1547", "subtitle": "Sinistro Auto — In lavorazione", "status": "Ricevuta", "details": [{"label": "Data incidente", "value": "15 marzo 2024"}, {"label": "Tipo", "value": "Collisione"}, {"label": "Descrizione", "value": "Tamponamento al semaforo"}, {"label": "Prossimo step", "value": "Perizia entro 48h"}], "actionLabel": "Vedi stato pratica", "actionName": "view_claim", "id": "claim-2024-1547"}]}}
+User action: submit_claim with data {"incident_date": "2024-03-15", "type": "Collision", "description": "Rear-end collision at traffic light"}
+{"message": "Claim received! Here is a summary of your case.", "template": "info_list", "data": {"title": "Claim Report Submitted ✓", "items": [{"title": "Case #2024-1547", "subtitle": "Auto Claim — In progress", "status": "Received", "details": [{"label": "Incident date", "value": "March 15, 2024"}, {"label": "Type", "value": "Collision"}, {"label": "Description", "value": "Rear-end collision at traffic light"}, {"label": "Next step", "value": "Assessment within 48 hours"}], "actionLabel": "View case status", "actionName": "view_claim", "id": "claim-2024-1547"}]}}
 """
 
 

@@ -4,44 +4,44 @@
 
 TEST_PROMPTS = [
     # ── Text-only (no UI) ──
-    "Ciao, cosa sai fare?",
-    "Quali tipi di assicurazione offrite?",
+    "Hi, what can you do?",
+    "What types of insurance do you offer?",
 
     # ── Policy browsing ──
-    "Voglio vedere le polizze auto disponibili.",
-    "Mostrami un confronto tra le polizze casa: Base, Plus e Premium.",
-    "Quali sono le opzioni di assicurazione vita?",
+    "I want to see the available auto insurance policies.",
+    "Show me a comparison between home insurance policies: Base, Plus, and Premium.",
+    "What are the life insurance options?",
 
     # ── KPI Dashboard ──
-    "Mostrami una dashboard con lo stato delle mie polizze attive, i premi pagati e le scadenze.",
-    "Crea un riepilogo del mio portfolio assicurativo con 4 KPI.",
+    "Show me a dashboard with the status of my active policies, premiums paid, and expiration dates.",
+    "Create a summary of my insurance portfolio with 4 KPIs.",
 
     # ── Policy selection (button interaction) ──
-    "Voglio cambiare la mia assicurazione auto. Che polizze ci sono?",
-    "Confronta i piani salute: Bronze, Silver e Gold con prezzi e coperture.",
+    "I want to change my auto insurance. What policies are available?",
+    "Compare health plans: Bronze, Silver, and Gold with prices and coverage.",
 
     # ── Claims ──
-    "Voglio aprire un sinistro per la mia auto.",
-    "Mostrami un wizard per la denuncia di un sinistro: data, tipo di incidente e descrizione.",
+    "I want to file a claim for my auto insurance.",
+    "Show me a wizard to file a claim: date, incident type, and description.",
 
     # ── Forms ──
-    "Voglio richiedere un preventivo per un'assicurazione casa. Fammi un form.",
-    "Crea un modulo per aggiornare i miei dati di contatto: nome, email, telefono, indirizzo.",
+    "I want to request a quote for home insurance. Show me a form.",
+    "Create a form to update my contact details: name, email, phone, address.",
 
     # ── Complex interactions ──
-    "Mostrami le mie polizze attive in una lista con stato, scadenza e un bottone per i dettagli.",
-    "Crea una tabella comparativa di 3 piani assicurativi auto con premio, franchigia e massimale.",
+    "Show me my active policies in a list with status, expiration, and a button for details.",
+    "Create a comparative table of 3 auto insurance plans with premium, deductible, and maximum coverage.",
 
     # ── Cards + details ──
-    "Mostrami i dettagli della polizza Premium Auto con coperture, franchigia e premio mensile.",
-    "Crea una card con il riepilogo di un sinistro: numero pratica, stato, data e importo.",
+    "Show me the details of the Premium Auto policy with coverage, deductible, and monthly premium.",
+    "Create a card with a claim summary: case number, status, date, and amount.",
 
     # ── Tabs ──
-    "Crea una pagina con 3 tab: Le Mie Polizze, Sinistri Aperti, Pagamenti.",
+    "Create a page with 3 tabs: My Policies, Open Claims, Payments.",
 
     # ── Edge cases ──
     "What is the difference between comprehensive and third-party insurance?",
-    "Dimmi la conferenza tech da non perdere quest'anno.",
+    "Tell me the tech conference not to miss this year.",
 ]
 
 if __name__ == "__main__":

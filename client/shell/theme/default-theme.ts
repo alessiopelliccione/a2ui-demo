@@ -16,7 +16,7 @@
 
 import { v0_8 } from "@a2ui/lit";
 
-// Punto di verità unico per i colori imposti al motore
+// Single source of truth for colors enforced by the engine
 export const DesignSystemConfig = {
   primaryColor: "#10B981", 
   font: "Geist"
