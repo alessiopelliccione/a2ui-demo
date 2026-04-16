@@ -301,7 +301,6 @@ export class A2UIShell extends SignalWatcher(LitElement) {
       <div id="chat-header">
         <h1>${this.config.title}</h1>
         <a href="components.html" class="header-link">
-          <span class="material-symbols-outlined">palette</span>
           Components
         </a>
       </div>
