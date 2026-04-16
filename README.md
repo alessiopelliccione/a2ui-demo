@@ -104,6 +104,17 @@ Navigate to `http://localhost:5173` and try these commands:
 | Stepper | "Add a stepper for user onboarding" |
 | Modification | "Make it more compact" |
 
+### Demo v2 (Insurance Assistant)
+
+We recently updated the agent to act as an Insurance Assistant. Try these prompts for a more structured flow:
+
+| Feature | Prompt |
+|---------|--------|
+| Dashboard | "Show me a dashboard of my current policies and their status." |
+| Comparison | "Can you help me compare different health insurance plans so I can see the coverage options and deductibles?" |
+| Form/Flow | "I need to file a new auto insurance claim for a recent accident, can you guide me through the process?" |
+
+
 ## One-Liner Setup
 
 ```bash
