@@ -6,7 +6,7 @@ Built with [Google A2UI](https://github.com/google/A2UI) (Agent-to-User Interfac
 
 ## Demo
 
-<video src="resources/demo_v2.mp4" controls width="100%"></video>
+[![Demo](https://img.youtube.com/vi/p0eIIpee7O0/maxresdefault.jpg)](https://youtu.be/p0eIIpee7O0)
 
 ## What's Inside
 
