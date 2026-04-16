@@ -4,6 +4,10 @@
 
 Built with [Google A2UI](https://github.com/google/A2UI) (Agent-to-User Interface).
 
+## Demo
+
+<video src="resources/demo_v2.mp4" controls width="100%"></video>
+
 ## What's Inside
 
 ```
