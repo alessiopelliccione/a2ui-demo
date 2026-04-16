@@ -74,19 +74,6 @@ export class A2UIShell extends SignalWatcher(LitElement) {
       background: white;
       flex-shrink: 0;
     }
-    #chat-header .logo {
-      width: 36px;
-      height: 36px;
-      border-radius: 10px;
-      background: #10B981;
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
-      font-size: 14px;
-      flex-shrink: 0;
-    }
     #chat-header h1 {
       margin: 0;
       font-size: 17px;
@@ -134,29 +121,6 @@ export class A2UIShell extends SignalWatcher(LitElement) {
       display: flex;
       flex-direction: column;
       gap: 20px;
-    }
-
-    .empty-state {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-      color: #9ca3af;
-      font-size: 16px;
-      text-align: center;
-    }
-    .empty-state .agent-icon {
-      width: 56px;
-      height: 56px;
-      border-radius: 16px;
-      background: #10B981;
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 28px;
     }
 
     /* ── Message bubbles ── */
@@ -335,9 +299,6 @@ export class A2UIShell extends SignalWatcher(LitElement) {
 
     return html`
       <div id="chat-header">
-        <div class="logo">
-          <span class="material-symbols-outlined" style="font-size:20px">shield</span>
-        </div>
         <h1>${this.config.title}</h1>
         <a href="components.html" class="header-link">
           <span class="material-symbols-outlined">palette</span>
@@ -348,15 +309,6 @@ export class A2UIShell extends SignalWatcher(LitElement) {
       <div id="main-content">
         <div id="chat-panel">
           <div id="chat-messages">
-            ${this.#chatHistory.length === 0 && !this.#requesting ? html`
-              <div class="empty-state">
-                <div class="agent-icon">
-                  <span class="material-symbols-outlined">shield</span>
-                </div>
-                <div>${this.config.placeholder}</div>
-              </div>
-            ` : nothing}
-
             ${repeat(this.#chatHistory, (e) => e.id, (entry) => {
               if (entry.role === 'user') {
                 return html`
@@ -394,7 +346,7 @@ export class A2UIShell extends SignalWatcher(LitElement) {
                 ?disabled=${this.#requesting}
                 @click=${this.#handleSend}
               >
-                <span class="material-symbols-outlined">send</span>
+                <span class="material-symbols-outlined">arrow_upward</span>
               </button>
             </div>
           </div>
